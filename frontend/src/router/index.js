@@ -1,7 +1,6 @@
-import { createRouter, createWebHistory } from 'vue-router'
-
+import { createRouter, createWebHistory } from 'vue-router';
 const isAuthenticated = () => {
-  return true;
+  return !!window.$cookies.isKey('user_id') || !!window.$cookies.isKey('account_id') || !!window.$cookies.isKey('auth_id') || '/';
 }
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
@@ -21,10 +20,7 @@ const router = createRouter({
       name: 'ResetPassword',
       component: () => import('../views/ResetPassword.vue'),
       beforeEnter() {
-        if (!isAuthenticated()) {
-          alert("You must login first");
-          return "/";
-        }
+        return true;
       }
     },
     {
@@ -33,15 +29,12 @@ const router = createRouter({
       component: () => import('../views/RegisterVue.vue')
     },
     {
-      path: '/list/:id',
-      name: 'List',
+      path: '/lists',
+      name: 'Lists',
       component: () => import('../views/ListVue.vue'),
       props: true,
       beforeEnter() {
-        if (!isAuthenticated()) {
-          alert("You must login first");
-          return "/";
-        }
+        return isAuthenticated();
       }
     },
     {
@@ -49,10 +42,7 @@ const router = createRouter({
       name: 'Items',
       component: () => import('../views/ItemsVue.vue'),
       beforeEnter() {
-        if (!isAuthenticated()) {
-          alert("You must login first");
-          return "/";
-        }
+        return isAuthenticated();
       },
       children: [
         {
@@ -61,10 +51,7 @@ const router = createRouter({
           component: () => import('../views/AddEditItem.vue'),
           props: true,
           beforeEnter() {
-            if (!isAuthenticated()) {
-              alert("You must login first");
-              return "/";
-            }
+        return isAuthenticated();
           }
         }
       ]
@@ -74,10 +61,7 @@ const router = createRouter({
       name: 'Categories',
       component: () => import('../views/CategoriesVue.vue'),
       beforeEnter() {
-        if (!isAuthenticated()) {
-          alert("You must login first");
-          return "/";
-        }
+        return isAuthenticated();
       },
       children: [
         {
@@ -86,10 +70,7 @@ const router = createRouter({
           component: () => import('../views/AddEditCategory.vue'),
           props: true,
           beforeEnter() {
-            if (!isAuthenticated()) {
-              alert("You must login first");
-              return "/";
-            }
+        return isAuthenticated();
           }
         }
       ]
@@ -100,10 +81,7 @@ const router = createRouter({
       component: () => import('../views/StoresVue.vue'),
       props: true,
       beforeEnter() {
-        if (!isAuthenticated()) {
-          alert("You must login first");
-          return "/";
-        }
+        return isAuthenticated();
       },
       children: [
         {
@@ -112,10 +90,7 @@ const router = createRouter({
           component: () => import('../views/AddEditStore.vue'),
           props: true,
           beforeEnter() {
-            if (!isAuthenticated()) {
-              alert("You must login first");
-              return "/";
-            }
+        return isAuthenticated();
           }
         }
       ]

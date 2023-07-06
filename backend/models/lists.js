@@ -8,6 +8,8 @@ module.exports = (sequelize, DataTypes) => {
         list_id: {
             field: 'list_id',
             type: DataTypes.INTEGER,
+			allowNull: false,
+			autoIncrement: true,
             primaryKey: true
         },
         name: {
