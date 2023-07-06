@@ -19,7 +19,13 @@ const router = createRouter({
     {
       path: '/reset/:id',
       name: 'ResetPassword',
-      component: () => import('../views/ResetPassword.vue')
+      component: () => import('../views/ResetPassword.vue'),
+      beforeEnter() {
+        if (!isAuthenticated()) {
+          alert("You must login first");
+          return "/";
+        }
+      }
     },
     {
       path: '/register',
@@ -53,7 +59,13 @@ const router = createRouter({
           path: '/items/:id',
           name: 'AddEditItem',
           component: () => import('../views/AddEditItem.vue'),
-          props: true
+          props: true,
+          beforeEnter() {
+            if (!isAuthenticated()) {
+              alert("You must login first");
+              return "/";
+            }
+          }
         }
       ]
     },
@@ -72,7 +84,13 @@ const router = createRouter({
           path: '/categories/:id',
           name: 'AddEditCategory',
           component: () => import('../views/AddEditCategory.vue'),
-          props: true
+          props: true,
+          beforeEnter() {
+            if (!isAuthenticated()) {
+              alert("You must login first");
+              return "/";
+            }
+          }
         }
       ]
     },
@@ -92,7 +110,13 @@ const router = createRouter({
           path: '/stores/:id',
           name: 'AddEditStore',
           component: () => import('../views/AddEditStore.vue'),
-          props: true
+          props: true,
+          beforeEnter() {
+            if (!isAuthenticated()) {
+              alert("You must login first");
+              return "/";
+            }
+          }
         }
       ]
     }
