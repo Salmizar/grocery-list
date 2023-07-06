@@ -1,18 +1,19 @@
-# frontend
+# backend
+
 
 ### Compiles and hot-reloads for development
 ```
-yarn serve
+nodemon api.js
 ```
 
 ### Compiles and minifies for production
 ```
-yarn build
+npm run build
 ```
 
 ### Lints and fixes files
 ```
-yarn lint
+npx eslint .
 ```
 
 ### Customize configuration

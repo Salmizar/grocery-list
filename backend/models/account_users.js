@@ -8,6 +8,8 @@ module.exports = (sequelize, DataTypes) => {
         account_user_id: {
             field: 'account_user_id',
             type: DataTypes.INTEGER,
+			allowNull: false,
+			autoIncrement: true,
             primaryKey: true
         },
         account_id: {

@@ -3,23 +3,12 @@ const cookie = require('cookie');
 const models = require('./models/index');
 const bcrypt = require('bcrypt');
 const api = express();
-
-/* 
-api.get('/api/users/', function (request, response) {
-    models.Users.findAll().then((data) => {
-        if (data) {
-            response.json(data);
-        } else {
-            response.status(404).send();
-        }
-    });
-});
-api.get('/api/accounts/', function (request, response) {
-    models.Accounts.findAll().then((accounts) => {
-        response.json(accounts);
-    });
-});
-*/
+const cors = require('cors');
+const cookieParams = {
+    path: '/',
+    sameSite: 'strict',
+    maxAge: 60 * 60 * 24 * 7 // 1 week
+};
 const isAuthorized = (request, response) => {
     return new Promise((resolve) => {
         var cookies = cookie.parse(request.headers.cookie || '');
@@ -40,7 +29,7 @@ const isAuthorized = (request, response) => {
         }
     })
 };
-
+api.use(cors({ origin: process.env.ORIGIN_URL, credentials: true }));
 api.get('/api/users/login/:email', function (request, response) {
     //var cookies = cookie.parse(request.headers.cookie || '');
     let password = request.query.password;
@@ -70,27 +59,23 @@ api.get('/api/users/login/:email', function (request, response) {
                         }
                     ).then((result) => {
                         let dataCopy = JSON.parse(JSON.stringify(result[1]));
-                        dataCopy.loginSuccess = true;
                         delete dataCopy.password;
-                        response.setHeader('Set-Cookie', cookie.serialize('user_id', String(dataCopy.user_id), {
-                            path: '/',
-                            maxAge: 60 * 60 * 24 * 7 // 1 week
-                        }));
-                        response.setHeader('Set-Cookie', cookie.serialize('auth_id', String(dataCopy.auth_id), {
-                            path: '/',
-                            maxAge: 60 * 60 * 24 * 7 // 1 week
-                        }));
+                        let cookies = [
+                            cookie.serialize('user_id', String(dataCopy.user_id), cookieParams),
+                            cookie.serialize('auth_id', String(dataCopy.auth_id), cookieParams)
+                        ];
                         switch (data[0].account_users.length) {
                             case 0:
                                 response.status(401).send();
+                                break;
                             case 1:
-                                response.setHeader('Set-Cookie', cookie.serialize('account_id', String(data[0].account_users[0].account_id), {
-                                    path: '/',
-                                    maxAge: 60 * 60 * 24 * 7 // 1 week
-                                }));
+                                response.setHeader('Set-header', [...cookies, cookie.serialize('account_id', String(data[0].account_users[0].account_id), cookieParams)])
+                                    .json(dataCopy);
+                                break;
                             default:
                                 dataCopy.account_users = data[0].account_users;
-                                response.json(dataCopy);
+                                response.setHeader('Set-Cookie', cookies)
+                                    .json(dataCopy);
                         }
                     });
                 } else {
