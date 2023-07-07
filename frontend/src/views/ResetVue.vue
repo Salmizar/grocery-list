@@ -7,9 +7,12 @@
     <main class="send-reset-form sh3">
       <w-form v-model="valid">
         <section>
-          <w-input class="ma1" :validators="[validators.required]">Email Address</w-input>
+          <w-input v-model="userEmail" class="ma1" :validators="[validators.required, validators.validEmail]">Email Address</w-input>
         </section>
-        <w-button class="ma1" xl bg-color="success" type="submit" :loading="submitloading" @click="submitLoading()">Send password reset email</w-button>
+        <w-alert v-if="requestSent" success light no-border>If there is an account associated with this email address, a
+          reset email will be sent.</w-alert>
+        <w-button class="ma1" xl bg-color="success" type="submit" :loading="submitloading" @click="submitLoading()">Send
+          password reset email</w-button>
       </w-form>
       <nav>
         Dont have an account? <router-link :to="{ name: 'Register' }">Register</router-link> now.
@@ -18,28 +21,44 @@
   </div>
 </template>
 <script>
+import axios from "axios";
 export default {
   data: () => ({
     submitloading: false,
+    requestSent: false,
+    userEmail: '',
     valid: null,
     validators: {
-      required: value => !!value || 'This field is required'
+      required: value => !!value || 'This field is required',
+      validEmail: value => value.toLowerCase().match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) || 'Invalid Email Address'
     }
   }),
   methods: {
-  submitLoading () {
-    if (this.valid) {
-      this.submitloading = true;
-      setTimeout(() => (this.submitloading = false), 3000);
+    submitLoading() {
+      if (this.valid) {
+        this.requestSent = true;
+        this.submitloading = true;
+        axios.get(process.env.VUE_APP_API_URL + '/api/reset/?email=' + this.userEmail, { withCredentials: true })
+          .then(() => {
+            this.submitloading = false;
+          })
+          .catch(error => {
+            this.submitloading = false;
+            if (error.response.status === 401) {
+              this.isInvalidResult = true;
+            }
+          }
+          );
+      }
     }
   }
-}
 }
 </script>
 <style>
 .send-reset-container {
   text-align: center;
 }
+
 .send-reset-container input {
   text-align: left;
 }
@@ -61,5 +80,4 @@ main {
 nav {
   padding-top: 20px;
   line-height: 1.5em;
-}
-</style>
+}</style>
