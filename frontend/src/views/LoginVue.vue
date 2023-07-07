@@ -80,7 +80,8 @@ export default {
             if (error.response.status === 401) {
               this.isInvalidResult = true;
             }
-          });
+          }
+        );
       }
     }
   }

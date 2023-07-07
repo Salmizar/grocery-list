@@ -16,4 +16,4 @@ const models = [
 models.forEach(function (model) {
     module.exports[model] = require('./' + model.toLocaleLowerCase())(sequelize, Sequelize.DataTypes);
 });
-module.exports.Sequelize = Sequelize;
+module.exports.sequelize = sequelize;

@@ -19,6 +19,7 @@ const router = createRouter({
       path: '/reset/:id',
       name: 'ResetPassword',
       component: () => import('../views/ResetPassword.vue'),
+      props: true,
       beforeEnter() {
         return true;
       }
@@ -26,7 +27,19 @@ const router = createRouter({
     {
       path: '/register',
       name: 'Register',
-      component: () => import('../views/RegisterVue.vue')
+      component: () => import('../views/RegisterVue.vue'),
+      props: true,
+      children: [
+        {
+          path: '/register/:id',
+          name: 'Register',
+          component: () => import('../views/RegisterVue.vue'),
+          beforeEnter(to) {
+            console.log(to.query.email!==undefined , to.query.auth_id!==undefined , !isNaN(Number(to.query.account_id)) , !isNaN(Number(to.params.id)));
+            return (to.query.email!==undefined && to.query.auth_id!==undefined && !isNaN(Number(to.query.account_id)) && !isNaN(Number(to.params.id))) || '/';
+          }
+        }
+      ]
     },
     {
       path: '/lists',
@@ -41,6 +54,7 @@ const router = createRouter({
       path: '/items',
       name: 'Items',
       component: () => import('../views/ItemsVue.vue'),
+      props: true,
       beforeEnter() {
         return isAuthenticated();
       },
@@ -49,7 +63,6 @@ const router = createRouter({
           path: '/items/:id',
           name: 'AddEditItem',
           component: () => import('../views/AddEditItem.vue'),
-          props: true,
           beforeEnter() {
         return isAuthenticated();
           }
@@ -60,6 +73,7 @@ const router = createRouter({
       path: '/categories',
       name: 'Categories',
       component: () => import('../views/CategoriesVue.vue'),
+      props: true,
       beforeEnter() {
         return isAuthenticated();
       },
@@ -68,7 +82,6 @@ const router = createRouter({
           path: '/categories/:id',
           name: 'AddEditCategory',
           component: () => import('../views/AddEditCategory.vue'),
-          props: true,
           beforeEnter() {
         return isAuthenticated();
           }
@@ -88,7 +101,6 @@ const router = createRouter({
           path: '/stores/:id',
           name: 'AddEditStore',
           component: () => import('../views/AddEditStore.vue'),
-          props: true,
           beforeEnter() {
         return isAuthenticated();
           }

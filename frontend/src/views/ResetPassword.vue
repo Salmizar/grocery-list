@@ -9,6 +9,7 @@
         <section>
           <w-input v-model="newPassword" class="ma1" :validators="[validators.required, validators.passwordLength]" type="password">New Password</w-input>
           <w-input class="ma1" :validators="[validators.required, validators.passwordMatch]" type="password">Confirm Password</w-input>
+          <w-alert v-if="passwordReset" success light no-border>Your password has been reset, redirecting you to your account</w-alert>
         </section>
         <w-button class="ma1" xl bg-color="success" type="submit" :loading="submitloading" @click="submitLoading()">Update Password</w-button>
       </w-form>
@@ -19,17 +20,14 @@
   </div>
 </template>
 <script>
+import axios from "axios";
 export default {
-  props: {
-    id: {
-      type: Number,
-      default: 0
-    }
-  },
+    props: ['id'],
   data() {
     return {
       newPassword: null,
       submitloading: false,
+      passwordReset: false,
       valid: null,
       validators: {
         required: value => !!value || 'This field is required',
@@ -41,12 +39,26 @@ export default {
   methods: {
     submitLoading() {
       if (this.valid) {
-        if (this.newPassword != this.confirmPassword) {
-          alert('Passwords do not match');
-        } else {
           this.submitloading = true;
-          setTimeout(() => (this.submitloading = false), 3000);
-        }
+          let params = {
+            ...this.$route.query,
+            user_id: this.$route.params.id,
+            new_password: this.newPassword
+          }
+          axios.get(process.env.VUE_APP_API_URL + '/api/reset/', { withCredentials: true , params: params })
+          .then(() => {
+            this.passwordReset = true;
+            setTimeout(() => {
+              this.$router.push({ name: 'Lists' });
+            },2000);
+          })
+          .catch(error => {
+            this.submitloading = false;
+            if (error.response.status === 401) {
+              this.$router.push({ name: 'Login' });
+            }
+          }
+          );
       }
     }
   }
