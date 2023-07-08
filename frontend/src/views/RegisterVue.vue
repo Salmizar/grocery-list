@@ -8,12 +8,12 @@
       <w-form v-model="valid">
         <section>
           <w-input v-model="fullName" class="ma1" :validators="[validators.required]">Full Name</w-input>
-          <w-input v-if="!displayAccountName" readonly v-model="emailAddress" class="ma1" :validators="[validators.required, validators.validEmail]">Email Address</w-input>
+          <w-input maxlength="255" v-if="!displayAccountName" readonly v-model="emailAddress" class="ma1" :validators="[validators.required, validators.validEmail]">Email Address</w-input>
           <!-- Duplicated email input fields, toggling visibility because waveui doesn't support readonly/disabled being set programatically -->
-          <w-input v-if="displayAccountName" v-model="emailAddress" class="ma1" :validators="[validators.required, validators.validEmail]">Email Address</w-input>
-          <w-input v-model="userPassword" class="ma1" :validators="[validators.required, validators.passwordLength]"
+          <w-input maxlength="255" v-if="displayAccountName" v-model="emailAddress" class="ma1" :validators="[validators.required, validators.validEmail]">Email Address</w-input>
+          <w-input maxlength="255" v-model="userPassword" class="ma1" :validators="[validators.required, validators.passwordLength]"
             type="password">Password</w-input>
-          <w-input v-if="displayAccountName" v-model="accountName" class="ma1" :validators="[validators.accountNameRequired]">Account Name</w-input>
+          <w-input maxlength="50" v-if="displayAccountName" v-model="accountName" class="ma1" :validators="[validators.accountNameRequired]">Account Name</w-input>
         </section>
         <w-button class="ma1" xl bg-color="warning" type="reset" @click="resetForm()">Reset</w-button>
         <w-button class="ma1" xl bg-color="success" type="submit" :loading="submitloading"

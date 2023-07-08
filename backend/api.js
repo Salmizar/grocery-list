@@ -200,7 +200,7 @@ api.get('/api/users/login/:email', function (request, response) {
                                 response.status(401).send();
                                 break;
                             case 1:
-                                response.setHeader('Set-header', [...cookies, cookie.serialize('account_id', String(data[0].account_users[0].account_id), cookieParams)])
+                                response.setHeader('Set-Cookie', [...cookies, cookie.serialize('account_id', String(data[0].account_users[0].account_id), cookieParams)])
                                     .json(dataCopy);
                                 break;
                             default:
@@ -333,7 +333,10 @@ api.get('/api/list_items/:list_id', function (request, response) {
         models.List_Items.findAll(
             {
                 include: [{ model: models.Items, include: { model: models.Categories } }],
-                where: { list_id: request.params.list_id }
+                where: { list_id: request.params.list_id },
+                order: [
+                    [models.sequelize.literal('order_id'), 'ASC']
+                ]
             }
         ).then((data) => {
             if (data) {
@@ -355,6 +358,9 @@ models.Account_Users.belongsTo(models.Users, { foreignKey: 'user_id' });
 
 models.Items.hasMany(models.List_Items, { foreignKey: 'item_id' });
 models.List_Items.belongsTo(models.Items, { foreignKey: 'item_id' });
+
+models.Lists.hasMany(models.List_Items, { foreignKey: 'item_id' });
+models.List_Items.belongsTo(models.Lists, { foreignKey: 'item_id' });
 
 models.Categories.hasMany(models.Items, { foreignKey: 'category_id' });
 models.Items.belongsTo(models.Categories, { foreignKey: 'category_id' });

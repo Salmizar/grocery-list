@@ -35,7 +35,6 @@ const router = createRouter({
           name: 'Register',
           component: () => import('../views/RegisterVue.vue'),
           beforeEnter(to) {
-            console.log(to.query.email!==undefined , to.query.auth_id!==undefined , !isNaN(Number(to.query.account_id)) , !isNaN(Number(to.params.id)));
             return (to.query.email!==undefined && to.query.auth_id!==undefined && !isNaN(Number(to.query.account_id)) && !isNaN(Number(to.params.id))) || '/';
           }
         }
