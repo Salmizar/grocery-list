@@ -7,8 +7,8 @@
     <main class="reset-password-form sh3">
       <w-form v-model="valid">
         <section>
-          <w-input v-model="newPassword" class="ma1" :validators="[validators.required, validators.passwordLength]" type="password">New Password</w-input>
-          <w-input class="ma1" :validators="[validators.required, validators.passwordMatch]" type="password">Confirm Password</w-input>
+          <w-input maxlength="255" v-model="newPassword" class="ma1" :validators="[validators.required, validators.passwordLength]" type="password">New Password</w-input>
+          <w-input maxlength="255" class="ma1" :validators="[validators.required, validators.passwordMatch]" type="password">Confirm Password</w-input>
           <w-alert v-if="passwordReset" success light no-border>Your password has been reset, redirecting you to your account</w-alert>
         </section>
         <w-button class="ma1" xl bg-color="success" type="submit" :loading="submitloading" @click="submitLoading()">Update Password</w-button>

@@ -7,7 +7,7 @@
     <main class="send-reset-form sh3">
       <w-form v-model="valid">
         <section>
-          <w-input v-model="userEmail" class="ma1" :validators="[validators.required, validators.validEmail]">Email Address</w-input>
+          <w-input maxlength="255" v-model="userEmail" class="ma1" :validators="[validators.required, validators.validEmail]">Email Address</w-input>
         </section>
         <w-alert v-if="requestSent" success light no-border>If there is an account associated with this email address, a
           reset email will be sent.</w-alert>

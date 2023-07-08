@@ -7,9 +7,9 @@
     <main class="login-form sh3">
       <w-form v-model="valid">
         <section>
-          <w-input v-model="userEmail" class="ma1" :validators="[validators.required, validators.validEmail]">Email
+          <w-input maxlength="255" v-model="userEmail" class="ma1" :validators="[validators.required, validators.validEmail]">Email
             Address</w-input>
-          <w-input v-model="userPassword" class="ma1" :validators="[validators.required]"
+          <w-input  maxlength="255" v-model="userPassword" class="ma1" :validators="[validators.required]"
             type="password">Password</w-input>
           <w-alert v-if="isInvalidResult" error>Invalid Email Address or Password</w-alert>
           <div class="w-input__label w-form-el-shakable primary mt5" v-if="items.length > 0">Select an Account</div>
@@ -66,11 +66,11 @@ export default {
           .then((response) => {
             this.submitloading = false;
             if (response.status === 200) {
-              if (response.data.account_users.length > 1) {
+              if (response.data.account_users && response.data.account_users.length > 1) {
                 for (var item in response.data.account_users) {
                   this.items.push({ label: response.data.account_users[item].account.name, value: response.data.account_users[item].account_id });
                 }
-              } else if (response.data.account_users.length === 1) {
+              } else {
                 this.redirectToAccount();
               }
             }
