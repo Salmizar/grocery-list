@@ -1,10 +1,7 @@
 <template>
   <div class="reset-password-container">
-    <header>
-      <img alt="App logo" width="48" height="65" src="../assets/logo.png">
-      <h2>My Grocery List</h2>
-    </header>
-    <main class="reset-password-form sh3">
+    <logo-vue />
+    <div class="reset-password-form sh3">
       <w-form v-model="valid">
         <section>
           <w-input maxlength="255" v-model="newPassword" class="ma1" :validators="[validators.required, validators.passwordLength]" type="password">New Password</w-input>
@@ -16,12 +13,14 @@
       <nav>
         Already have an account? <router-link :to="{ name: 'Login' }">Login</router-link> now.
       </nav>
-    </main>
+    </div>
   </div>
 </template>
 <script>
+import LogoVue from "@/components/LogoVue.vue";
 import axios from "axios";
 export default {
+    components: { LogoVue },
     props: ['id'],
   data() {
     return {
@@ -76,7 +75,7 @@ header {
   padding: 30px;
 }
 
-main {
+.reset-password-form {
   position: relative;
   left: 50%;
   margin-left: -180px;

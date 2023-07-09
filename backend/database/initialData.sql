@@ -54,11 +54,15 @@ INSERT INTO  items (account_id, category_id, store_ids, name) VALUES (new_accoun
 INSERT INTO  items (account_id, category_id, store_ids, name) VALUES (new_account_id, new_category_fruit_id, new_store_yigs_id, 'Oranges') RETURNING item_id INTO new_item_3;
 INSERT INTO  items (account_id, category_id, store_ids, name) VALUES (new_account_id, new_category_meat_id, new_store_yigs_id, 'Sliced Turkey Breast') RETURNING item_id INTO new_item_4;
 INSERT INTO  items (account_id, category_id, store_ids, name) VALUES (new_account_id, new_category_meat_id, new_store_yigs_id, 'Hamburgers') RETURNING item_id INTO new_item_5;
+INSERT INTO  items (account_id, category_id, store_ids, name) VALUES (new_account_id, new_category_meat_id, new_store_yigs_id, 'Bacon');
+INSERT INTO  items (account_id, category_id, store_ids, name) VALUES (new_account_id, new_category_meat_id, new_store_yigs_id, 'Chicken Breasts');
 INSERT INTO  items (account_id, category_id, store_ids, name) VALUES (new_account_id, new_category_dairy_id, new_store_yigs_id, 'Lactose free Milk (Bags)') RETURNING item_id INTO new_item_6;
 INSERT INTO  items (account_id, category_id, store_ids, name) VALUES (new_account_id, new_category_dairy_id, new_store_yigs_id, '1% Skim Milk (Bags)') RETURNING item_id INTO new_item_7;
+INSERT INTO  items (account_id, category_id, store_ids, name) VALUES (new_account_id, new_category_dairy_id, new_store_yigs_id, 'Eggs');
 INSERT INTO  items (account_id, category_id, store_ids, name) VALUES (new_account_id, new_category_personal_care_id, new_store_walmart_id, 'Once a Day - Vitamins') RETURNING item_id INTO new_item_8;
 INSERT INTO  items (account_id, category_id, store_ids, name) VALUES (new_account_id, new_category_personal_care_id, new_store_walmart_id, 'Toothpaste') RETURNING item_id INTO new_item_9;
 INSERT INTO  items (account_id, category_id, store_ids, name) VALUES (new_account_id, new_category_personal_care_id, new_store_walmart_id, 'Shampoo') RETURNING item_id INTO new_item_10;
+INSERT INTO  items (account_id, category_id, store_ids, name) VALUES (new_account_id, new_category_personal_care_id, new_store_walmart_id, 'Deodorant');
 
 INSERT INTO list_items (list_id, item_id, count) VALUES (new_list_1_id, new_item_1, 6);
 INSERT INTO list_items (list_id, item_id, count) VALUES (new_list_1_id, new_item_2, 5);

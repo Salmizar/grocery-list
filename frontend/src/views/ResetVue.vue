@@ -1,10 +1,7 @@
 <template>
   <div class="send-reset-container">
-    <header>
-      <img alt="App logo" width="48" height="65" src="../assets/logo.png">
-      <h2>My Grocery List</h2>
-    </header>
-    <main class="send-reset-form sh3">
+    <logo-vue />
+    <div class="send-reset-form sh3">
       <w-form v-model="valid">
         <section>
           <w-input maxlength="255" v-model="userEmail" class="ma1" :validators="[validators.required, validators.validEmail]">Email Address</w-input>
@@ -17,12 +14,14 @@
       <nav>
         Dont have an account? <router-link :to="{ name: 'Register' }">Register</router-link> now.
       </nav>
-    </main>
+    </div>
   </div>
 </template>
 <script>
+import LogoVue from "@/components/LogoVue.vue";
 import axios from "axios";
 export default {
+  components: { LogoVue },
   data: () => ({
     submitloading: false,
     requestSent: false,
@@ -67,7 +66,7 @@ header {
   padding: 30px;
 }
 
-main {
+.send-reset-form {
   position: relative;
   left: 50%;
   margin-left: -180px;

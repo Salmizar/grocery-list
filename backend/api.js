@@ -33,6 +33,7 @@ const isAuthorized = (request, response) => {
 };
 api.use(cors({ origin: process.env.ORIGIN_URL, credentials: true }));
 
+//patch
 api.get('/api/register/', function (request, response) {
     let name = request.query.name;
     let emailAddress = request.query.email;
@@ -96,7 +97,7 @@ api.get('/api/register/', function (request, response) {
         }
     }
 });
-
+//patch
 api.get('/api/reset/', function (request, response) {
     let email = request.query.email;
     if (!email) {
@@ -163,6 +164,7 @@ api.get('/api/reset/', function (request, response) {
         });
     }
 });
+//patch
 api.get('/api/users/login/:email', function (request, response) {
     let password = request.query.password;
     if (!password) {
@@ -216,6 +218,7 @@ api.get('/api/users/login/:email', function (request, response) {
         });
     }
 });
+//patch
 api.get('/api/users/:user_id/update_password/:new_password', function (request, response) {
     isAuthorized(request, response).then(() => {
         let salt = bcrypt.genSaltSync(10);
@@ -335,8 +338,28 @@ api.get('/api/list_items/:list_id', function (request, response) {
                 include: [{ model: models.Items, include: { model: models.Categories } }],
                 where: { list_id: request.params.list_id },
                 order: [
-                    [models.sequelize.literal('order_id'), 'ASC']
+                    [models.sequelize.literal('order_id'), 'ASC'],
+                    [models.sequelize.literal('item.name'), 'ASC']
                 ]
+            }
+        ).then((data) => {
+            if (data) {
+                response.json(data);
+            } else {
+                response.status(404).send();
+            }
+        });
+    });
+});
+api.patch('/api/list_items/:list_item_id', function (request, response) {
+    console.log('/api/list_items/:list_id list_item_id:', request.params.list_item_id, ' count:',request.query.count);
+    isAuthorized(request, response).then(() => {
+        models.List_Items.update(
+            {
+                count: request.query.count
+            },
+            {
+                where: { list_item_id: request.params.list_item_id }
             }
         ).then((data) => {
             if (data) {

@@ -1,15 +1,13 @@
 <template>
   <div class="login-container">
-    <header>
-      <img alt="App logo" width="48" height="65" src="../assets/logo.png">
-      <h2>My Grocery List</h2>
-    </header>
-    <main class="login-form sh3">
+    <logo-vue />
+    <div class="login-form sh3">
       <w-form v-model="valid">
         <section>
-          <w-input maxlength="255" v-model="userEmail" class="ma1" :validators="[validators.required, validators.validEmail]">Email
+          <w-input maxlength="255" v-model="userEmail" class="ma1"
+            :validators="[validators.required, validators.validEmail]">Email
             Address</w-input>
-          <w-input  maxlength="255" v-model="userPassword" class="ma1" :validators="[validators.required]"
+          <w-input maxlength="255" v-model="userPassword" class="ma1" :validators="[validators.required]"
             type="password">Password</w-input>
           <w-alert v-if="isInvalidResult" error>Invalid Email Address or Password</w-alert>
           <div class="w-input__label w-form-el-shakable primary mt5" v-if="items.length > 0">Select an Account</div>
@@ -22,35 +20,38 @@
           @click="submitLogin()">Login</w-button>
       </w-form>
       <nav>
-        <router-link :to="{ name: 'Reset' }">Forgot Password</router-link> <br>
+        <router-link :to="{ name: 'Reset' }">Forgot Password</router-link><br>
         Dont have an account? <router-link :to="{ name: 'Register' }">Register</router-link> now.
       </nav>
-    </main>
+    </div>
   </div>
 </template>
 <script>
+import LogoVue from "@/components/LogoVue.vue";
 import axios from "axios";
 export default {
+  components: { LogoVue },
   data: () => ({
     accountSelection: 0,
     items: [],
     isInvalidResult: false,
-    userEmail: 'user@some-email.com',
-    userPassword: 'password',
+    userEmail: "user@some-email.com",
+    userPassword: "password",
     submitloading: false,
     valid: null,
     validators: {
-      required: value => !!value || 'This field is required',
-      validEmail: value => value.toLowerCase().match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) || 'Invalid Email Address'
+      required: value => !!value || "This field is required",
+      validEmail: value => value.toLowerCase().match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) || "Invalid Email Address"
     }
   }),
   methods: {
     redirectToAccount() {
-      this.$router.push({ name: 'Lists' });
+      console.log('cookies',window.$cookies);
+      this.$router.push({ name: "Lists" });
     },
     selectAccount() {
       this.submitloading = true;
-      this.$cookies.set('account_id', this.accountSelection);
+      this.$cookies.set("account_id", this.accountSelection);
       this.redirectToAccount();
     },
     resetForm() {
@@ -62,15 +63,18 @@ export default {
       if (this.valid) {
         this.submitloading = true;
         this.isInvalidResult = false;
-        axios.get(process.env.VUE_APP_API_URL + '/api/users/login/' + this.userEmail + '?password=' + this.userPassword, { withCredentials: true })
+        console.log(process.env.VUE_APP_API_URL + "/api/users/login/" + this.userEmail + "?password=" + this.userPassword);
+        axios.get(process.env.VUE_APP_API_URL + "/api/users/login/" + this.userEmail + "?password=" + this.userPassword, { withCredentials: true })
           .then((response) => {
             this.submitloading = false;
             if (response.status === 200) {
+              console.log(response, response.data);
               if (response.data.account_users && response.data.account_users.length > 1) {
                 for (var item in response.data.account_users) {
                   this.items.push({ label: response.data.account_users[item].account.name, value: response.data.account_users[item].account_id });
                 }
-              } else {
+              }
+              else {
                 this.redirectToAccount();
               }
             }
@@ -80,8 +84,7 @@ export default {
             if (error.response.status === 401) {
               this.isInvalidResult = true;
             }
-          }
-        );
+          });
       }
     }
   }
@@ -91,14 +94,16 @@ export default {
 .login-container {
   text-align: center;
 }
+
 .login-container input {
   text-align: left;
 }
+
 header {
   padding: 30px;
 }
 
-main {
+.login-form {
   position: relative;
   left: 50%;
   margin-left: -180px;
@@ -111,5 +116,4 @@ main {
 nav {
   padding-top: 20px;
   line-height: 1.5em;
-}
-</style>
+}</style>
