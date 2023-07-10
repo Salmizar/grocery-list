@@ -1,14 +1,14 @@
 <template>
   <li v-if="firstInCategory">
     <w-flex justify-space-between class="pt2 pb2 pl3 pr3 success-light1--bg white">
-      <div>{{ item.item.category.name }}</div>
+      <div>{{ item.category_name }}</div>
     </w-flex>
   </li>
   <li>
     <w-flex v-on:dblclick="lowerItemCount(0)" v-on:click="lowerItemCount(-1)" class="item" justify-space-between
       v-bind:class="{ 'grey-light3': item.count === 0 }">
-      <div class="pt2 pb2 pl3 xs10 itemName">{{ item.item.name }}<span v-if="item.count === 0"> - Done!</span></div>
-      <div class="xs2 itemCount pr3 pt2">x {{ item.count }}</div>
+      <div class="pt2 pb2 pl3 xs10 itemName">{{ item.item_name }}<span v-if="item.count === 0"> - Done!</span></div>
+      <div class="xs2 itemCount pr3 pt1">x {{ item.count }}</div>
     </w-flex>
   </li>
 </template>
@@ -36,14 +36,14 @@ export default {
           })
           .catch(error => {
             if (error.response.status === 401) {
-              //alert('An Error ocurred obtaining a lists items');
+              alert('An Error ocurred obtaining a lists items');
             }
           });
       }
     }
   },
   mounted() {
-    this.firstInCategory = this.index === 0 || this.$parent.items[this.index - 1].item.category.category_id != this.item.item.category.category_id;
+    this.firstInCategory = this.index === 0 || this.$parent.items[this.index - 1].category_id != this.item.category_id;
   }
 }
 </script>
@@ -59,29 +59,29 @@ li {
 
 @keyframes fadeIn {
   0% {
-    opacity:0
+    opacity: 0
   }
+
   100% {
-    opacity:1;
+    opacity: 1;
   }
 }
-
 
 .item {
   cursor: pointer;
-  animation:fadeIn 0.3s linear;
+  animation: fadeIn 0.3s linear;
   white-space: nowrap;
 }
-.item:hover {
-  background-color: #F5F5F5;
-}
+
 .itemName {
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 .itemCount:hover {
+  border-radius: 10px;
   background-image: linear-gradient(to right, #F7F7F7, #e4e4e4);
 }
+
 .itemCount:hover::before {
   content: url("../assets/arrow-down-thick.svg");
   vertical-align: text-bottom;

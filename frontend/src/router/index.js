@@ -11,7 +11,7 @@ const router = createRouter({
       component: () => import('../views/LoginVue.vue')
     },
     {
-      path: '/reset',
+      path: '/reset/',
       name: 'Reset',
       component: () => import('../views/ResetVue.vue')
     },
@@ -20,12 +20,12 @@ const router = createRouter({
       name: 'ResetPassword',
       component: () => import('../views/ResetPassword.vue'),
       props: true,
-      beforeEnter() {
-        return true;
+      beforeEnter(to) {
+        return (to.query.email !== undefined && to.query.auth_id !== undefined && !isNaN(Number(to.query.account_id)) && !isNaN(Number(to.params.id))) || '/';
       }
     },
     {
-      path: '/register',
+      path: '/register/',
       name: 'Register',
       component: () => import('../views/RegisterVue.vue'),
       props: true,
@@ -35,22 +35,33 @@ const router = createRouter({
           name: 'Register',
           component: () => import('../views/RegisterVue.vue'),
           beforeEnter(to) {
-            return (to.query.email!==undefined && to.query.auth_id!==undefined && !isNaN(Number(to.query.account_id)) && !isNaN(Number(to.params.id))) || '/';
+            return (to.query.email !== undefined && to.query.auth_id !== undefined && !isNaN(Number(to.query.account_id)) && !isNaN(Number(to.params.id))) || '/';
           }
         }
       ]
     },
     {
-      path: '/lists',
+      path: '/lists/',
       name: 'Lists',
       component: () => import('../views/ListVue.vue'),
       props: true,
       beforeEnter() {
         return isAuthenticated();
-      }
+      },
+      children: [
+        {
+          path: '/lists/:list_id',
+          name: 'AddEditList',
+          component: () => import('../views/ListVue.vue'),
+          props: true,
+          beforeEnter() {
+            return isAuthenticated();
+          },
+        }
+      ]
     },
     {
-      path: '/items',
+      path: '/items/',
       name: 'Items',
       component: () => import('../views/ItemsVue.vue'),
       props: true,
@@ -63,13 +74,13 @@ const router = createRouter({
           name: 'AddEditItem',
           component: () => import('../views/AddEditItem.vue'),
           beforeEnter() {
-        return isAuthenticated();
+            return isAuthenticated();
           }
         }
       ]
     },
     {
-      path: '/categories',
+      path: '/categories/',
       name: 'Categories',
       component: () => import('../views/CategoriesVue.vue'),
       props: true,
@@ -82,13 +93,13 @@ const router = createRouter({
           name: 'AddEditCategory',
           component: () => import('../views/AddEditCategory.vue'),
           beforeEnter() {
-        return isAuthenticated();
+            return isAuthenticated();
           }
         }
       ]
     },
     {
-      path: '/stores',
+      path: '/stores/',
       name: 'Stores',
       component: () => import('../views/StoresVue.vue'),
       props: true,
@@ -101,7 +112,7 @@ const router = createRouter({
           name: 'AddEditStore',
           component: () => import('../views/AddEditStore.vue'),
           beforeEnter() {
-        return isAuthenticated();
+            return isAuthenticated();
           }
         }
       ]

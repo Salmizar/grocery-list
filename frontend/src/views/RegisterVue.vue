@@ -1,10 +1,7 @@
 <template>
   <div class="register-container">
-    <header>
-      <img alt="App logo" width="48" height="65" src="../assets/logo.png">
-      <h2>My Grocery List</h2>
-    </header>
-    <main class="register-form sh3">
+    <logo-vue />
+    <div class="register-form sh3">
       <w-form v-model="valid">
         <section>
           <w-input v-model="fullName" class="ma1" :validators="[validators.required]">Full Name</w-input>
@@ -22,17 +19,19 @@
       <nav>
         Already have an account? <router-link :to="{ name: 'Login' }">Login</router-link> now.
       </nav>
-    </main>
+    </div>
   </div>
 </template>
 <script>
+import LogoVue from "@/components/LogoVue.vue";
 import axios from "axios";
 export default {
+  components: { LogoVue },
   props: ['id'],
   data: () => ({
     fullName: '',
     emailAddress: '',
-    userPassword: '',
+    userPassword: process.env.VUE_APP_DEV_PASSWORD,
     accountName: 'My Grocery Lists',
     displayAccountName: true,
     submitloading: false,
@@ -55,20 +54,21 @@ export default {
     submitLoading() {
       if (this.valid) {
         this.submitloading = true;
-        let params = {
+        let data = {
           name: this.fullName,
           password: this.userPassword
         }
-        if (this.id) {
-          params.user_id = this.id;
-          params.auth_id = this.$route.query.auth_id;
-          params.account_id = this.$route.query.account_id;
+        if (this.id) {//register to existing account
+          data.user_id = this.id;
+          data.auth_id = this.$route.query.auth_id;
+          data.account_id = this.$route.query.account_id;
         } else {
-          params.email = this.emailAddress;
-          params.account_name = this.accountName;
+          data.email = this.emailAddress;
+          data.account_name = this.accountName;
         }
-        axios.get(process.env.VUE_APP_API_URL + '/api/register/',
-          { withCredentials: true, params: params }
+        axios.patch(process.env.VUE_APP_API_URL + '/api/register/',
+          data,
+          { withCredentials: true  }
         )
           .then((response) => {
             this.submitloading = false;
@@ -91,7 +91,7 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
 .register-container {
   text-align: center;
 }
@@ -104,7 +104,7 @@ header {
   padding: 30px;
 }
 
-main {
+.register-form {
   position: relative;
   left: 50%;
   margin-left: -180px;
