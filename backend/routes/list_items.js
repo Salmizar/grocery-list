@@ -54,7 +54,58 @@ router.patch('/:list_item_id', function (request, response) {
                     count: request.body.count
                 },
                 {
-                    where: { list_item_id: request.params.list_item_id }
+                    where: { list_item_id: request.params.list_item_id },
+                    returning: true,
+                    plain: true
+                }
+            ).then((data) => {
+                if (data) {
+                    response.json(data);
+                } else {
+                    response.status(404).send();
+                }
+            });
+        } else {
+            response.status(404).send();
+        }
+    });
+
+});
+//insert a list item
+router.post('/', function (request, response) {
+    helpers.isAuthorized(request, response).then(() => {
+        let count = Number(request.body.count);
+        if (!isNaN(count) && count >= 0 && request.body.item_id && request.body.list_id) {
+            helpers.models.List_Items.create(
+                {
+                    list_id:  request.body.list_id,
+                    item_id:  request.body.item_id,
+                    count: request.body.count
+                },
+                {
+                    returning: true,
+                    plain: true
+                }
+            ).then((data) => {
+                if (data) {
+                    response.json(data);
+                } else {
+                    response.status(404).send();
+                }
+            });
+        } else {
+            response.status(404).send();
+        }
+    });
+
+});
+//delete a list item
+router.delete('/:list_item_id', function (request, response) {
+    helpers.isAuthorized(request, response).then(() => {
+        if (request.params.list_item_id) {
+            helpers.models.List_Items.destroy(
+                {
+                    where: { list_item_id: request.params.list_item_id },
                 }
             ).then((data) => {
                 if (data) {
