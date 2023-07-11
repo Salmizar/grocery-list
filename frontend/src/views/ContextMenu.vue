@@ -1,5 +1,6 @@
 <template>
     <w-icon v-on:click="(e) => showMenu(e, 1)" lg class="menu-btn pl2 pt2">mdi mdi-menu</w-icon>
+    <w-icon lg class="menu-btn pl5 pt2" title="Filtering on a store" v-if="storeFilter>0" v-on:click="updateStoreFilter(0)">mdi mdi-filter</w-icon>
     <ul class="menu sh3" v-if="showMenu1">
         <li>
             <span @mouseover="(e) => showMenu(e, 2)" v-on:click="(e) => showMenu(e, 2)" class="sub-menu-btn">Edit <span
@@ -18,7 +19,7 @@
             <w-transition-slide top>
                 <ul class="sub-menu sh3" v-if="showMenu3">
                     <li>Create a new List</li>
-                    <li v-for="(list, index) in lists" :key="index" v-on:click="loadList(list.list_id)">
+                    <li v-for="(list, index) in lists" :key="index" v-bind:class="{'menu-selected' : Number(this.$route.params.list_id)===Number(list.list_id)}" v-on:click="loadList(list.list_id)">
                         {{ list.name }}
                     </li>
                 </ul>
@@ -32,19 +33,21 @@
                     class="crevron">></span></span>
             <w-transition-slide top>
                 <ul class="sub-menu sh3" v-if="showMenu4">
-                    <li v-for="(store, index) in stores" :key="index" v-on:click="loadStore(list.store_id)">{{ store.name }}
+                    <li v-bind:class="{'menu-selected' : storeFilter===0}" v-on:click="updateStoreFilter(0)">Show All</li>
+                    <li v-for="(store, index) in stores" :key="index" v-bind:class="{'menu-selected' : storeFilter===Number(store.store_id)}"  v-on:click="updateStoreFilter(store.store_id)">{{ store.name }}
                     </li>
                 </ul>
             </w-transition-slide>
         </li>
-        <li>LogOut</li>
+        <li v-on:click="logout()">LogOut</li>
     </ul>
 </template>
 <script>
 export default {
     props: {
         showListOptions: Boolean,
-        showDone: Boolean
+        showDone: Boolean,
+        storeFilter: Number
     },
     data: () => ({
         lists: [],
@@ -56,12 +59,22 @@ export default {
         menuTimeout: 0
     }),
     methods: {
+        logout() {
+            document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
+            this.$router.push({ name: "Login" });
+        },
+        updateStoreFilter(store_id) {
+            window.localStorage.setItem("mygrocerylist-filter-storeFilter", JSON.stringify(store_id));
+            this.$parent.updateStoreFilter(store_id);
+        },
         edit(route) {
             this.$router.push({ name: route });
         },
         loadList(list_id) {
             this.$router.push({ name: "AddEditList", params: { list_id: list_id } });
-            setTimeout(() => this.$router.go(), 20);
+            if (this.$route.params.list_id) {
+                setTimeout(() => this.$router.go(), 10);
+            }
         },
         hideMenu() {
             this.showMenu1 = false;
@@ -82,7 +95,7 @@ export default {
         },
         updateShowDone() {
             window.localStorage.setItem("mygrocerylist-filter-done", JSON.stringify(!this.showDone));
-            this.$parent.changeFilter(!this.showDone);
+            this.$parent.updateShowDone(!this.showDone);
         }
     },
     mounted() {
@@ -104,7 +117,7 @@ ul {
 
 .sub-menu {
     position: absolute;
-    margin-left: 90px;
+    margin-left: 95px;
     margin-top: -20px;
     background-color: white;
     border: 1px solid #000;
@@ -115,7 +128,9 @@ ul {
 .sub-menu-btn {
     display: block;
 }
-
+.menu-selected {
+  background-image: linear-gradient(to right, #e4e4e4, #F7F7F7);
+}
 .crevron {
     margin-left: 10px;
     float: right;
@@ -132,7 +147,7 @@ ul {
 }
 
 .menu li {
-    padding: 5px 10px 2px 20px;
+    padding: 10px 15px 5px 25px;
     white-space: nowrap;
 }
 
