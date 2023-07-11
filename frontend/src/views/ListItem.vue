@@ -4,17 +4,20 @@
       <div>{{ categoryName }}</div>
     </w-flex>
   </li>
-  <li>
-    <w-flex class="item" justify-space-between v-bind:class="{ 'itemDone grey-light3': item.count === 0 }">
-      <div v-on:click="setItemCount(-1)" class="pt2 pb2 pl3 xs10 itemName">
-        {{ itemName }}
-        <span v-if="item.count === 0"> - Done</span>
-      </div>
-      <w-transition-slide left>
-        <div v-on:dblclick="setItemCount(0)" v-if="(item.count > 0)" class="xs2 itemCount pr3 pt2">x {{ item.count }}</div>
-      </w-transition-slide>
-    </w-flex>
-  </li>
+  <w-transition-expand y>
+    <li v-if="item.count > 0 || showDone">
+      <w-flex class="item" justify-space-between v-bind:class="{ 'itemDone grey-light3': item.count === 0 }">
+        <div v-on:click="setItemCount(-1)" class="pt2 pb2 pl3 xs10 itemName">
+          {{ itemName }}
+          <span v-if="item.count === 0"> - Done</span>
+        </div>
+        <w-transition-slide left>
+          <div v-on:dblclick="setItemCount(0)" v-if="(item.count > 0)" class="xs2 itemCount pr3 pt2">x {{ item.count }}
+          </div>
+        </w-transition-slide>
+      </w-flex>
+    </li>
+  </w-transition-expand>
 </template>
 <script>
 import axios from "axios";
@@ -28,7 +31,8 @@ export default {
   }),
   props: {
     item: Object,
-    index: Number
+    index: Number,
+    showDone: Boolean
   },
   methods: {
     updateItemCount() {
@@ -89,6 +93,7 @@ li {
     opacity: 1;
   }
 }
+
 .item {
   cursor: pointer;
   animation: fadeIn 0.3s linear;
@@ -98,9 +103,11 @@ li {
   -ms-user-select: none;
   user-select: none;
 }
+
 .item:hover {
   background-color: #F5F5F5;
 }
+
 .itemDone {
   cursor: default;
 }
@@ -122,5 +129,4 @@ li {
   height: 16px;
   margin-right: 11px;
 
-}
-</style>
+}</style>

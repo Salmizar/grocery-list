@@ -11,7 +11,7 @@ const router = createRouter({
       component: () => import('../views/LoginVue.vue')
     },
     {
-      path: '/reset/',
+      path: '/reset',
       name: 'Reset',
       component: () => import('../views/ResetVue.vue')
     },
@@ -25,7 +25,7 @@ const router = createRouter({
       }
     },
     {
-      path: '/register/',
+      path: '/register',
       name: 'Register',
       component: () => import('../views/RegisterVue.vue'),
       props: true,
@@ -41,7 +41,7 @@ const router = createRouter({
       ]
     },
     {
-      path: '/lists/',
+      path: '/lists',
       name: 'Lists',
       component: () => import('../views/ListVue.vue'),
       props: true,
@@ -61,7 +61,7 @@ const router = createRouter({
       ]
     },
     {
-      path: '/items/',
+      path: '/items',
       name: 'Items',
       component: () => import('../views/ItemsVue.vue'),
       props: true,
@@ -80,7 +80,7 @@ const router = createRouter({
       ]
     },
     {
-      path: '/categories/',
+      path: '/categories',
       name: 'Categories',
       component: () => import('../views/CategoriesVue.vue'),
       props: true,
@@ -99,7 +99,7 @@ const router = createRouter({
       ]
     },
     {
-      path: '/stores/',
+      path: '/stores',
       name: 'Stores',
       component: () => import('../views/StoresVue.vue'),
       props: true,
