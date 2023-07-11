@@ -1,14 +1,14 @@
 <template>
   <div>
     <header>
-      <ContextMenu :showListOptions="true" :showDone="showDone" />
+      <ContextMenu :showListOptions="true" :showDone="showDone" :storeFilter="storeFilter" />
       <h2>{{ list_name }}</h2>
     </header>
     <w-button xl bg-color="light-blue-light5" @click="toggleAddEditItems()" class="fill-width">{{ ((editing) ? `Done
       Editing` : 'Edit Items') }}</w-button>
     <main>
       <ol v-if="!editing">
-        <ListItem v-for="(item, index) in items" :item="item" :index="index" :key="index" :showDone="showDone" />
+        <ListItem v-for="(item, index) in items" :item="item" :index="index" :key="index" :showDone="showDone" :storeFilter="storeFilter" />
       </ol>
       <ol v-if="editing">
         <ListItemAll v-for="(item, index) in items" :item="item" :index="index" :key="index" />
@@ -33,6 +33,7 @@ export default {
   },
   data: () => ({
     showDone: true,
+    storeFilter: 0,
     loading: true,
     editing: false,
     list_name: '',
@@ -41,8 +42,11 @@ export default {
     items: []
   }),
   methods: {
-    changeFilter(filterDone) {
+    updateShowDone(filterDone) {
       this.showDone = filterDone;
+    },
+    updateStoreFilter(newStoreFilter) {
+      this.storeFilter = newStoreFilter;
     },
     updateItem(index, columns) {
       for (let column in columns) {
@@ -112,6 +116,8 @@ export default {
     this.editing = (this.$route.query.a === 'edit');
     this.list_id = ((this.$route.params.list_id != undefined) ? Number(this.$route.params.list_id) : 0);
     this.showDone = JSON.parse(window.localStorage.getItem("mygrocerylist-filter-done"));
+    this.storeFilter = window.localStorage.getItem("mygrocerylist-filter-storeFilter");
+    this.storeFilter = isNaN(this.storeFilter) ? 0 : Number(this.storeFilter);
     this.getStores();
     this.getLists();
   }

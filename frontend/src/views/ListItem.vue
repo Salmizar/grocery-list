@@ -5,7 +5,7 @@
     </w-flex>
   </li>
   <w-transition-expand y>
-    <li v-if="item.count > 0 || showDone">
+    <li v-if="showItem()">
       <w-flex class="item" justify-space-between v-bind:class="{ 'itemDone grey-light3': item.count === 0 }">
         <div v-on:click="setItemCount(-1)" class="pt2 pb2 pl3 xs10 itemName">
           {{ itemName }}
@@ -32,9 +32,17 @@ export default {
   props: {
     item: Object,
     index: Number,
-    showDone: Boolean
+    showDone: Boolean,
+    storeFilter: Number
   },
   methods: {
+    showItem() {
+      if (this.storeFilter>0) {
+        return this.item.item.store_ids.indexOf(this.storeFilter)>-1 && (this.item.count > 0 || this.showDone) 
+      } else {
+        return this.item.count > 0 || this.showDone;
+      }
+    },
     updateItemCount() {
       axios.patch(process.env.VUE_APP_API_URL + '/api/list_items/' + this.item.list_item_id,
         { count: this.newCount },
