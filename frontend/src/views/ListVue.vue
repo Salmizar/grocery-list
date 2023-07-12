@@ -8,7 +8,8 @@
       Editing` : 'Edit Items') }}</w-button>
     <main>
       <ol v-if="!editing">
-        <ListItem v-for="(item, index) in items" :item="item" :index="index" :key="index" :showDone="showDone" :storeFilter="storeFilter" />
+        <ListItem v-for="(item, index) in items" :item="item" :index="index" :key="index" :showDone="showDone"
+          :storeFilter="storeFilter" />
       </ol>
       <ol v-if="editing">
         <ListItemAll v-for="(item, index) in items" :item="item" :index="index" :key="index" />
