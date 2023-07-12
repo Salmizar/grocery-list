@@ -1,13 +1,13 @@
 <template>
     <li>
-        <w-flex v-on:click="editing = !editing" justify-space-between
-            v-bind:class="{ 'success-light1--bg white itemCategory': type === 'categories' }" class="pt2 pb2 pl3 pr3 item">
+        <w-flex v-on:click="editItem" justify-space-between
+            v-bind:class="{ 'success-light1--bg white itemCategory': type === 'category' }" class="pt2 pb2 pl3 pr3 item">
             <div>{{ name }}</div>
         </w-flex>
         <w-transition-expand y>
             <div v-if="editing">
-            <AddEditMisc :item="item" :type="type" :index="index" />
-        </div>
+                <AddEditMisc :item="item" :type="type" :index="index" v-on:updateItem="updateItem" v-on:deleteItem="deleteItem" />
+            </div>
         </w-transition-expand>
     </li>
 </template>
@@ -15,6 +15,13 @@
 import AddEditMisc from '@/views/AddEditMisc.vue';
 //import axios from "axios";
 export default {
+    emits: [
+        'updateItem',
+        'deleteItem'
+    ],
+    components: {
+        AddEditMisc
+    },
     data: () => ({
         editing: false
     }),
@@ -25,11 +32,18 @@ export default {
         index: Number
     },
     methods: {
+        updateItem(name, item) {
+            this.editing = false;
+            this.$emit('updateItem', name, item);
+        },
+        deleteItem(item) {
+            this.editing = false;
+            this.$emit('deleteItem', item);
+        },
         editItem() {
             this.editing = !this.editing;
         }
-    },
-    components: { AddEditMisc }
+    }
 }
 </script>
 <style scoped>
@@ -64,4 +78,5 @@ li {
 
 .itemCategory:hover {
     background-color: #a4ff96;
-}</style>
+}
+</style>
