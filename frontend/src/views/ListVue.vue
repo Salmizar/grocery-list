@@ -1,7 +1,8 @@
 <template>
   <div>
     <header>
-      <ContextMenu :showListOptions="true" :showDone="showDone" :storeFilter="storeFilter" />
+      <ContextMenu :showListOptions="true" :showDone="showDone" :storeFilter="storeFilter"
+      v-on:updateShowDone="updateShowDone" v-on:updateStoreFilter="updateStoreFilter" />
       <h2>{{ list_name }}</h2>
     </header>
     <w-button xl bg-color="light-blue-light5" @click="toggleAddEditItems()" class="fill-width">{{ ((editing) ? `Done
@@ -9,10 +10,10 @@
     <main>
       <ol v-if="!editing">
         <ListItem v-for="(item, index) in items" :item="item" :index="index" :key="index" :showDone="showDone"
-          :storeFilter="storeFilter" />
+          :storeFilter="storeFilter" v-on:updateItem="updateItem" />
       </ol>
       <ol v-if="editing">
-        <ListItemAll v-for="(item, index) in items" :item="item" :index="index" :key="index" />
+        <ListItemAll v-for="(item, index) in items" :item="item" :index="index" :key="index" v-on:updateItem="updateItem" />
       </ol>
       <LoadingFooter :loading="loading" :itemsLength="items.length" />
     </main>

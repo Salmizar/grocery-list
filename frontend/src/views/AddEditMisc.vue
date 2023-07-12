@@ -1,6 +1,5 @@
 <template>
-    <h3 v-if="type != 'new'" class="mt3 pb3 mb5 text-center">Edit {{ type }}</h3>
-    <w-form v-model="valid" class="pl10 mb8">
+    <w-form v-model="valid" class="pl5 pb5 pt3 form">
         <section>
             <w-input maxlength="50" v-model="name" class="ma1 name" :validators="[validators.required]">Name</w-input>
         </section>

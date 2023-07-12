@@ -26,6 +26,7 @@
 <script>
 import axios from "axios";
 export default {
+  emits: ['updateItem'],
   data: () => ({
     firstInCategory: false,
     hasItems: false,
@@ -44,7 +45,7 @@ export default {
         )
           .then((response) => {
             if (response.status === 200) {
-              this.$parent.updateItem(this.index, { count: null, list_item_id: null });
+              this.$emit('updateItem', this.index, { count: null, list_item_id: null });
             }
           })
           .catch(error => {
@@ -59,7 +60,7 @@ export default {
         )
           .then((response) => {
             if (response.status === 200) {
-              this.$parent.updateItem(this.index, { count: response.data[1].count });
+              this.$emit('updateItem', this.index, { count: response.data[1].count });
             }
           })
           .catch(error => {
@@ -72,7 +73,7 @@ export default {
     setItemCount(incriment) {
       if (this.hasItems || this.item.count === 0) {
         this.newCount = this.item.count + incriment;
-        this.$parent.updateItem(this.index, { count: this.newCount });
+        this.$emit('updateItem', this.index, { count: this.newCount });
         this.updateObjs();
         clearTimeout(this.updateCountTimeout);
         this.updateCountTimeout = setTimeout(() => { this.updateItemCount() }, 500);
@@ -83,7 +84,7 @@ export default {
         )
           .then((response) => {
             if (response.status === 200) {
-              this.$parent.updateItem(this.index, response.data);
+              this.$emit('updateItem', this.index, response.data);
               this.updateObjs();
             }
           })
@@ -188,4 +189,5 @@ li {
 
 .itemActions:hover {
   opacity: 1;
-}</style>
+}
+</style>
