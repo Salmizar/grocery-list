@@ -6,7 +6,7 @@ router.get('/', function (request, response) {
     helpers.isAuthorized(request, response).then((cookies) => {
         helpers.models.Accounts.findAll(
             {
-                where: { account_id: cookies.user_id }
+                where: { user_id: cookies.user_id }
             }
         ).then((data) => {
             if (data) {

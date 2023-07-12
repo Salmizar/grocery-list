@@ -19,7 +19,7 @@
             <w-transition-slide top>
                 <ul class="sub-menu sh3" v-if="showMenu3">
                     <li>Create a new List</li>
-                    <li v-for="(list, index) in lists" :key="index" v-bind:class="{'menu-selected' : Number(this.$route.params.list_id)===Number(list.list_id)}" v-on:click="loadList(list.list_id)">
+                    <li v-for="(list) in lists" :key="list.list_id" v-bind:class="{'menu-selected' : Number(this.$route.params.list_id)===Number(list.list_id)}" v-on:click="loadList(list.list_id)">
                         {{ list.name }}
                     </li>
                 </ul>
@@ -34,7 +34,7 @@
             <w-transition-slide top>
                 <ul class="sub-menu sh3" v-if="showMenu4">
                     <li v-bind:class="{'menu-selected' : storeFilter===0}" v-on:click="updateStoreFilter(0)">Show All</li>
-                    <li v-for="(store, index) in stores" :key="index" v-bind:class="{'menu-selected' : storeFilter===Number(store.store_id)}"  v-on:click="updateStoreFilter(store.store_id)">{{ store.name }}
+                    <li v-for="(store) in stores" :key="store.store_id" v-bind:class="{'menu-selected' : storeFilter===Number(store.store_id)}"  v-on:click="updateStoreFilter(store.store_id)">{{ store.name }}
                     </li>
                 </ul>
             </w-transition-slide>

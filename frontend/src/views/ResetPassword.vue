@@ -45,7 +45,6 @@ export default {
             user_id: this.$route.params.id,
             new_password: this.newPassword
           }
-          console.log(this.$route.params);
           axios.patch(process.env.VUE_APP_API_URL + '/api/reset/'+this.$route.query.email, data, { withCredentials: true })
           .then(() => {
             this.passwordReset = true;

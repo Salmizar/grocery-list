@@ -19,14 +19,14 @@ router.get('/', function (request, response) {
 });
 //update a store
 router.patch('/:store_id', function (request, response) {
-    helpers.isAuthorized(request, response).then(() => {
+    helpers.isAuthorized(request, response).then((cookies) => {
         if (request.params.store_id) {
             helpers.models.Stores.update(
                 {
                     name: request.body.name
                 },
                 {
-                    where: { store_id: request.params.store_id }
+                    where: { store_id: request.params.store_id, account_id: cookies.account_id }
                 }
             ).then((data) => {
                 if (data) {
@@ -67,11 +67,11 @@ router.post('/', function (request, response) {
 });
 //delete a store
 router.delete('/:store_id', function (request, response) {
-    helpers.isAuthorized(request, response).then(() => {
+    helpers.isAuthorized(request, response).then((cookies) => {
         if (request.params.store_id) {
             helpers.models.Stores.destroy(
                 {
-                    where: { store_id: request.params.store_id },
+                    where: { store_id: request.params.store_id, account_id: cookies.account_id },
                 }
             ).then((data) => {
                 if (data) {

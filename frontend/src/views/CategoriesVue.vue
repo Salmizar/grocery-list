@@ -16,7 +16,7 @@
       <ol>
         <MiscItem v-on:updateItemOrder="updateItemOrder" v-on:updateItem="updateItem" v-on:cancelItem="cancelItem"
           v-on:deleteItem="deleteItem" v-for="(item, index) in items" type="category" :item="item" :name="item.name"
-          :index="index" :key="index" />
+          :index="index" :key="item.category_id" />
       </ol>
       <LoadingFooter :loading="loading" :itemsLength="items.length" />
     </main>
@@ -63,7 +63,6 @@ export default {
                   this.$router.push({ name: 'Login' });
                 }
               });
-
           }
         })
         .catch(error => {
