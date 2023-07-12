@@ -86,17 +86,7 @@ const router = createRouter({
       props: true,
       beforeEnter() {
         return isAuthenticated();
-      },
-      children: [
-        {
-          path: '/categories/:id',
-          name: 'AddEditCategory',
-          component: () => import('../views/AddEditCategory.vue'),
-          beforeEnter() {
-            return isAuthenticated();
-          }
-        }
-      ]
+      }
     },
     {
       path: '/stores',
@@ -105,17 +95,7 @@ const router = createRouter({
       props: true,
       beforeEnter() {
         return isAuthenticated();
-      },
-      children: [
-        {
-          path: '/stores/:id',
-          name: 'AddEditStore',
-          component: () => import('../views/AddEditStore.vue'),
-          beforeEnter() {
-            return isAuthenticated();
-          }
-        }
-      ]
+      }
     }
   ]
 });

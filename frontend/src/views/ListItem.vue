@@ -22,6 +22,9 @@
 <script>
 import axios from "axios";
 export default {
+  emits: [
+    'updateItem'
+  ],
   data: () => ({
     firstInCategory: false,
     categoryName: '',
@@ -50,7 +53,7 @@ export default {
       )
         .then((response) => {
           if (response.status === 200) {
-            this.$parent.updateItem(this.index, { count: response.data[1].count });
+            this.$emit('updateItem', this.index, {count: response.data[1].count} );
           }
         })
         .catch(error => {
@@ -62,7 +65,7 @@ export default {
     setItemCount(lowerCount) {
       if (this.item.count > 0) {
         this.newCount = ((lowerCount === 0) ? 0 : (this.item.count + lowerCount));
-        this.$parent.updateItem(this.index, { count: this.newCount });
+        this.$emit('updateItem', this.index, {count: this.newCount } );
         this.updateObjs();
         clearTimeout(this.updateCountTimeout);
         this.updateCountTimeout = setTimeout(() => { this.updateItemCount() }, 2000);

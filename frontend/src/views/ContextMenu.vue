@@ -44,6 +44,10 @@
 </template>
 <script>
 export default {
+    emits: [
+        'updateStoreFilter',
+        'updateShowDone'
+    ],
     props: {
         showListOptions: Boolean,
         showDone: Boolean,
@@ -65,7 +69,7 @@ export default {
         },
         updateStoreFilter(store_id) {
             window.localStorage.setItem("mygrocerylist-filter-storeFilter", JSON.stringify(store_id));
-            this.$parent.updateStoreFilter(store_id);
+            this.$emit('updateStoreFilter', store_id);
         },
         edit(route) {
             this.$router.push({ name: route });
@@ -95,7 +99,7 @@ export default {
         },
         updateShowDone() {
             window.localStorage.setItem("mygrocerylist-filter-done", JSON.stringify(!this.showDone));
-            this.$parent.updateShowDone(!this.showDone);
+            this.$emit('updateShowDone', !this.showDone);
         }
     },
     mounted() {

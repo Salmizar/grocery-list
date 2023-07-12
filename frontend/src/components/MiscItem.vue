@@ -1,8 +1,13 @@
 <template>
     <li>
-        <w-flex v-on:click="editItem" justify-space-between
+        <w-flex justify-space-between
             v-bind:class="{ 'success-light1--bg white itemCategory': type === 'category' }" class="pt2 pb2 pl3 pr3 item">
-            <div>{{ name }}</div>
+            <div v-on:click="editItem" class="xs11">{{ name }}</div>
+            <div class="xs1" v-if="type==='category'">
+                <w-icon v-if="index>0" v-on:click="updateItemOrder(-1)" lg title="Move order up">mdi mdi-arrow-up-thick</w-icon>
+                <w-icon v-if="index<(this.$parent.items.length-1)" v-on:click="updateItemOrder(1)" lg v-bind:class="{'pl11' : index===0}"
+                class="pl5" title="Move order down">mdi mdi-arrow-down-thick</w-icon>
+            </div>
         </w-flex>
         <w-transition-expand y>
             <div v-if="editing">
@@ -17,7 +22,8 @@ import AddEditMisc from '@/views/AddEditMisc.vue';
 export default {
     emits: [
         'updateItem',
-        'deleteItem'
+        'deleteItem',
+        'updateItemOrder'
     ],
     components: {
         AddEditMisc
@@ -39,6 +45,9 @@ export default {
         deleteItem(item) {
             this.editing = false;
             this.$emit('deleteItem', item);
+        },
+        updateItemOrder(direction) {
+            this.$emit('updateItemOrder', direction, this.index, this.item);
         },
         editItem() {
             this.editing = !this.editing;
