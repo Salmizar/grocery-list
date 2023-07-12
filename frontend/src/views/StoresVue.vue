@@ -6,14 +6,14 @@
     </header>
     <w-button xl bg-color="light-blue-light5" @click="toggleAddNewItem" class="fill-width">{{ 'Add a Store' }}</w-button>
     <w-transition-expand y>
-            <div v-if="addItem">
+            <div v-if="addItem" class="add-item">
                 <AddEditMisc :item="{}" type="new" :index="0" v-on:updateItem="addNewItem" v-on:cancelItem="cancelItem" v-on:deleteItem="toggleAddNewItem" />
             </div>
         </w-transition-expand>
     <main>
       <ol>
         <MiscItem v-on:updateItem="updateItem" v-on:cancelItem="cancelItem" v-on:deleteItem="deleteItem" v-for="(item, index) in items" type="store"
-          :item="item" :name="item.name" :index="index" :key="index" />
+          :item="item" :name="item.name" :index="index" :key="item.store_id" />
       </ol>
       <LoadingFooter :loading="loading" :itemsLength="items.length" />
     </main>
@@ -50,9 +50,9 @@ export default {
         )
         .then((response) => {
           if (response.status === 200) {
-            this.loading = false;
             this.addItem = false;
             this.items.push(response.data);
+            this.updateStorage();
           }
         })
         .catch(error => {
@@ -61,12 +61,16 @@ export default {
           }
         });
     },
+    updateStorage() {
+      this.loading = false;
+      window.localStorage.setItem("mygrocerylist-stores", JSON.stringify(this.items));
+    },
     updateItem(name, item) {
       axios.patch(process.env.VUE_APP_API_URL + '/api/stores/' + item.store_id, {name: name }, { withCredentials: true })
         .then((response) => {
           if (response.status === 200) {
-            this.loading = false;
             item.name = name;
+            this.updateStorage();
           }
         })
         .catch(error => {
@@ -82,8 +86,8 @@ export default {
       axios.delete(process.env.VUE_APP_API_URL + '/api/stores/' + item.store_id, { withCredentials: true })
         .then((response) => {
           if (response.status === 200) {
-            this.loading = false;
             this.items = this.items.filter((itemtoCheck) => itemtoCheck.store_id != item.store_id);
+            this.updateStorage();
           }
         })
         .catch(error => {
@@ -117,5 +121,9 @@ export default {
 header {
   border-bottom: 1px solid darkgray;
   text-align: center;
+}
+.add-item {
+  border-bottom: 1px solid darkgray;
+
 }
 </style>

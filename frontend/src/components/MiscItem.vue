@@ -1,17 +1,22 @@
 <template>
     <li>
-        <w-flex justify-space-between
-            v-bind:class="{ 'success-light1--bg white itemCategory': type === 'category' }" class="pt2 pb2 pl3 pr3 item">
-            <div v-on:click="editItem" class="xs11">{{ name }}</div>
-            <div class="xs1" v-if="type==='category'">
-                <w-icon v-if="index>0" v-on:click="updateItemOrder(-1)" lg title="Move order up">mdi mdi-arrow-up-thick</w-icon>
-                <w-icon v-if="index<(this.$parent.items.length-1)" v-on:click="updateItemOrder(1)" lg v-bind:class="{'pl11' : index===0}"
-                class="pl5" title="Move order down">mdi mdi-arrow-down-thick</w-icon>
+        <w-flex v-bind:class="{ 'success-light1--bg white itemCategory': type === 'category' }" class="item">
+            <div v-bind:class="{ 'open': editing }" class="xs12 shadowboxease">
+                <div v-on:click="editItem" class="pl3 xs11 pointer pt2 pb2" title="Click to Edit">{{ name }}</div>
+                <div class="xs1" v-if="type === 'category'">
+                    <w-icon class="pt3 pointer" v-if="index > 0" v-on:click="updateItemOrder(-1)" lg
+                        title="Move order up">mdi
+                        mdi-arrow-up-thick</w-icon>
+                    <w-icon v-if="index < (this.$parent.items.length - 1)" v-on:click="updateItemOrder(1)" lg
+                        v-bind:class="{ 'pl11': index === 0 }" class="pt3 pl5 pointer" title="Move order down">mdi
+                        mdi-arrow-down-thick</w-icon>
+                </div>
             </div>
         </w-flex>
         <w-transition-expand y>
             <div v-if="editing">
-                <AddEditMisc :item="item" :type="type" :index="index" v-on:updateItem="updateItem" v-on:deleteItem="deleteItem" />
+                <AddEditMisc :item="item" :type="type" :index="index" v-on:updateItem="updateItem"
+                    v-on:deleteItem="deleteItem" />
             </div>
         </w-transition-expand>
     </li>
@@ -38,9 +43,9 @@ export default {
         index: Number
     },
     methods: {
-        updateItem(name, item) {
+        updateItem(name, item, category, stores) {
             this.editing = false;
-            this.$emit('updateItem', name, item);
+            this.$emit('updateItem', name, item, category, stores);
         },
         deleteItem(item) {
             this.editing = false;
@@ -57,7 +62,7 @@ export default {
 </script>
 <style scoped>
 li {
-    border-bottom: 1px solid white;
+    border-top: 1px solid white;
 }
 
 @keyframes fadeIn {
@@ -70,14 +75,29 @@ li {
     }
 }
 
-.item {
+.pointer {
     cursor: pointer;
+}
+
+.item {
     animation: fadeIn 0.3s linear;
     white-space: nowrap;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+.open {
+    box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.2);
+}
+
+.shadowboxease {
+    transition: box-shadow ease 0.4s;
+    display: flex;
+}
+
+li {
     border-bottom: 1px solid darkgray;
 }
 
@@ -87,5 +107,4 @@ li {
 
 .itemCategory:hover {
     background-color: #a4ff96;
-}
-</style>
+}</style>

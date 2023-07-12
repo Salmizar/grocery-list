@@ -27,7 +27,7 @@ router.get('/:list_id', function (request, response) {
                 helpers.models.List_Items.findAll(
                     {
                         include: [{ model: helpers.models.Items, include: { model: helpers.models.Categories } }],
-                        where: { list_id: request.params.list_id },
+                        where: { list_id: request.params.list_id, account_id: cookies.account_id },
                         order: [
                             [helpers.models.sequelize.literal('order_id'), 'ASC'],
                             [helpers.models.sequelize.literal('item.name'), 'ASC']
@@ -46,7 +46,7 @@ router.get('/:list_id', function (request, response) {
 });
 //update a list item
 router.patch('/:list_item_id', function (request, response) {
-    helpers.isAuthorized(request, response).then(() => {
+    helpers.isAuthorized(request, response).then((cookies) => {
         let count = Number(request.body.count);
         if (!isNaN(count) && count >= 0 && request.params.list_item_id) {
             helpers.models.List_Items.update(
@@ -54,7 +54,7 @@ router.patch('/:list_item_id', function (request, response) {
                     count: request.body.count
                 },
                 {
-                    where: { list_item_id: request.params.list_item_id },
+                    where: { list_item_id: request.params.list_item_id, account_id: cookies.account_id },
                     returning: true,
                     plain: true
                 }
@@ -73,14 +73,15 @@ router.patch('/:list_item_id', function (request, response) {
 });
 //insert a list item
 router.post('/', function (request, response) {
-    helpers.isAuthorized(request, response).then(() => {
+    helpers.isAuthorized(request, response).then((cookies) => {
         let count = Number(request.body.count);
         if (!isNaN(count) && count >= 0 && request.body.item_id && request.body.list_id) {
             helpers.models.List_Items.create(
                 {
                     list_id:  request.body.list_id,
                     item_id:  request.body.item_id,
-                    count: request.body.count
+                    count: request.body.count,
+                    account_id: cookies.account_id
                 },
                 {
                     returning: true,
@@ -101,11 +102,11 @@ router.post('/', function (request, response) {
 });
 //delete a list item
 router.delete('/:list_item_id', function (request, response) {
-    helpers.isAuthorized(request, response).then(() => {
+    helpers.isAuthorized(request, response).then((cookies) => {
         if (request.params.list_item_id) {
             helpers.models.List_Items.destroy(
                 {
-                    where: { list_item_id: request.params.list_item_id },
+                    where: { list_item_id: request.params.list_item_id, account_id: cookies.account_id },
                 }
             ).then((data) => {
                 if (data) {

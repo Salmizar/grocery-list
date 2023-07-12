@@ -29,7 +29,7 @@ router.patch('/:category_id', function (request, response) {
                         order_id: request.body.order_id
                     },
                     {
-                        where: { category_id: request.params.category_id }
+                        where: { category_id: request.params.category_id, account_id: cookies.account_id }
                     }
                 ).then((data) => {
                     if (data) {
@@ -57,7 +57,7 @@ router.patch('/:category_id', function (request, response) {
                         name: request.body.name
                     },
                     {
-                        where: { category_id: request.params.category_id }
+                        where: { category_id: request.params.category_id, account_id: cookies.account_id }
                     }
                 ).then((data) => {
                     if (data) {
@@ -101,13 +101,13 @@ router.post('/', function (request, response) {
 });
 //delete a category
 router.delete('/:category_id', function (request, response) {
-    helpers.isAuthorized(request, response).then(() => {
+    helpers.isAuthorized(request, response).then((cookies) => {
         if (request.params.category_id) {
             //Reset items which are associated with category about to be deleted
-            helpers.models.Items.update({ category_id: null }, { where: { category_id: request.params.category_id } }
+            helpers.models.Items.update({ category_id: null }, { where: { category_id: request.params.category_id, account_id: cookies.account_id } }
             ).then((data) => {
                 if (data) {
-                    helpers.models.Categories.destroy({ where: { category_id: request.params.category_id } }
+                    helpers.models.Categories.destroy({ where: { category_id: request.params.category_id, account_id: cookies.account_id } }
                     ).then((data) => {
                         if (data) {
                             response.json(data);
