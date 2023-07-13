@@ -6,7 +6,10 @@ router.get('/', function (request, response) {
     helpers.isAuthorized(request, response).then((cookies) => {
         helpers.models.Stores.findAll(
             {
-                where: { account_id: cookies.account_id }
+                where: { account_id: cookies.account_id },
+                order: [
+                    ['name', 'ASC']
+                ]
             }
         ).then((data) => {
             if (data) {

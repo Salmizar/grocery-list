@@ -8,36 +8,35 @@ const { queryTypes } = require('sequelize');
 router.get('/:list_id', function (request, response) {
     helpers.isAuthorized(request, response).then((cookies) => {
         if (request.params.list_id) {
-            if (request.query.allItems==='true') {
-                let query = `select items.item_id, items.account_id, items.name AS "item_name", items.category_id, categories.name AS "category_name", categories.order_id, items.store_ids, list_items.count, list_items.list_item_id
+            if (request.query.allItems === 'true') {
+                let query = `select items.item_id, items.name AS "item_name", items.category_id, categories.name AS "category_name", categories.order_id, items.store_ids, list_items.count, list_items.list_item_id
                 FROM items AS items
                 LEFT OUTER JOIN list_items ON items.item_id = list_items.item_id AND list_items.list_id = ${request.params.list_id}
                 LEFT OUTER JOIN categories ON items.category_id = categories.category_id
                 WHERE items.account_id = ${cookies.account_id}
                 ORDER BY categories.order_id ASC, items.name ASC`;
-                helpers.models.sequelize.query(query, {model:helpers.models.Items, mapToModel: true}).then((data) => {
+                helpers.models.sequelize.query(query, { model: helpers.models.Items, mapToModel: true }).then((data) => {
                     if (data.length === 0) {
                         response.status(401).send();
                     } else {
-                        
                         response.json(data);
                     }
                 });
             } else {
                 helpers.models.List_Items.findAll(
                     {
-                        include: [{ model: helpers.models.Items, include: { model: helpers.models.Categories } }],
-                        where: { list_id: request.params.list_id, account_id: cookies.account_id },
+                        include: { model: helpers.models.Items, where: {account_id: cookies.account_id}, include: {model: helpers.models.Categories}},
+                        where: { list_id: request.params.list_id },
                         order: [
                             [helpers.models.sequelize.literal('order_id'), 'ASC'],
                             [helpers.models.sequelize.literal('item.name'), 'ASC']
                         ]
                     }
                 ).then((data) => {
-                    if (data) {
-                        response.json(data);
+                    if (data.length === 0) {
+                        response.status(401).send();
                     } else {
-                        response.status(404).send();
+                        response.json(data);
                     }
                 });
             }
@@ -49,18 +48,29 @@ router.patch('/:list_item_id', function (request, response) {
     helpers.isAuthorized(request, response).then((cookies) => {
         let count = Number(request.body.count);
         if (!isNaN(count) && count >= 0 && request.params.list_item_id) {
-            helpers.models.List_Items.update(
+            helpers.models.Items.findAll(
                 {
-                    count: request.body.count
-                },
-                {
-                    where: { list_item_id: request.params.list_item_id, account_id: cookies.account_id },
-                    returning: true,
-                    plain: true
+                    include: [{ model: helpers.models.List_Items, where: { list_item_id: request.params.list_item_id } }],
+                    where: { account_id: cookies.account_id }
                 }
             ).then((data) => {
-                if (data) {
-                    response.json(data);
+                if (data.length > 0) {
+                    helpers.models.List_Items.update(
+                        {
+                            count: request.body.count
+                        },
+                        {
+                            where: { list_item_id: request.params.list_item_id },
+                            returning: true,
+                            plain: true
+                        }
+                    ).then((data) => {
+                        if (data) {
+                            response.json(data);
+                        } else {
+                            response.status(404).send();
+                        }
+                    });
                 } else {
                     response.status(404).send();
                 }
@@ -76,24 +86,34 @@ router.post('/', function (request, response) {
     helpers.isAuthorized(request, response).then((cookies) => {
         let count = Number(request.body.count);
         if (!isNaN(count) && count >= 0 && request.body.item_id && request.body.list_id) {
-            helpers.models.List_Items.create(
+            helpers.models.Items.findAll(
                 {
-                    list_id:  request.body.list_id,
-                    item_id:  request.body.item_id,
-                    count: request.body.count,
-                    account_id: cookies.account_id
-                },
-                {
-                    returning: true,
-                    plain: true
+                    where: { item_id: request.body.item_id, account_id: cookies.account_id }
                 }
             ).then((data) => {
-                if (data) {
-                    response.json(data);
+                if (data.length > 0) {
+                    helpers.models.List_Items.create(
+                        {
+                            list_id: request.body.list_id,
+                            item_id: request.body.item_id,
+                            count: request.body.count
+                        },
+                        {
+                            returning: true,
+                            plain: true
+                        }
+                    ).then((data) => {
+                        if (data) {
+                            response.json(data);
+                        } else {
+                            response.status(404).send();
+                        }
+                    });
                 } else {
                     response.status(404).send();
                 }
             });
+
         } else {
             response.status(404).send();
         }
@@ -104,16 +124,24 @@ router.post('/', function (request, response) {
 router.delete('/:list_item_id', function (request, response) {
     helpers.isAuthorized(request, response).then((cookies) => {
         if (request.params.list_item_id) {
-            helpers.models.List_Items.destroy(
+            helpers.models.Items.findAll(
                 {
-                    where: { list_item_id: request.params.list_item_id, account_id: cookies.account_id },
+                    include: [{ model: helpers.models.List_Items, where: { list_item_id: request.params.list_item_id } }],
+                    where: { account_id: cookies.account_id }
                 }
             ).then((data) => {
-                if (data) {
-                    response.json(data);
-                } else {
-                    response.status(404).send();
-                }
+                helpers.models.List_Items.destroy(
+                    {
+                        where: { list_item_id: request.params.list_item_id },
+                    }
+                ).then((data) => {
+                    if (data) {
+                        response.json(data);
+                    } else {
+                        response.status(404).send();
+                    }
+                });
+
             });
         } else {
             response.status(404).send();

@@ -75,7 +75,7 @@ export default {
       if (this.item && this.item.item) {
         this.categoryName = this.item.item.category.name;
         this.itemName = this.item.item.name;
-        this.firstInCategory = this.index === 0 || this.$parent.items[this.index - 1].item.category.category_id != this.item.item.category.category_id;
+        this.firstInCategory = this.index === 0 || this.$parent.items[this.index - 1].item.category_id != this.item.item.category_id;
       }
     }
   },
