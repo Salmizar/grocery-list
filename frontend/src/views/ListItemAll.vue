@@ -1,25 +1,27 @@
 <template>
-  <li v-if="firstInCategory">
-    <w-flex justify-space-between class="pt2 pb2 pl3 pr3 success-light1--bg white categories">
+  <li v-if="firstInCategory" class="category">
+    <w-flex justify-space-between class="pt2 pb2 pl3 white categories">
       <div class="xs10 shrink">{{ item.category_name }}</div>
-      <div class="xs2 mr10">In&nbsp;List</div>
+      <div class="xs1  text-center">In&nbsp;List</div>
+      <div class="xs1">&nbsp;</div>
     </w-flex>
   </li>
   <li>
     <w-flex class="item" justify-space-between>
-      <div v-on:click="setItemCount(+1)" v-bind:class="{ 'grey-light3 itenNameMissing': hasItems }"
-        class="xs10 pt2 pb2 pl3 itemName" title="Add an Item">
+      <div v-on:click="setItemCount(1)" v-bind:class="{ 'grey-light3': hasItems }" class="xs9 pt2 pb2 pl3 itemName"
+        title="Add an Item">
         {{ item.item_name }}
       </div>
-      <w-transition-slide left>
-        <div title="Add an Item" v-on:click="setItemCount(+1)" v-bind:class="{ 'grey-light3': hasItems }" v-if="hasItems"
-          class="black xs1 pt2 pb2 pl3 itemCount">x {{ item.count }}</div>
-      </w-transition-slide>
-      <w-transition-slide left>
-        <div v-on:click="setItemCount(-1)" v-if="hasItems" class="xs1 pl2 itemActions" title="Remove an Item">
-          <w-icon lg>mdi mdi-delete</w-icon>
-        </div>
-      </w-transition-slide>
+      <div v-on:click="setItemCount(1)" class="xs1 itemActions text-right" title="Add an Item">
+        <w-icon lg>mdi mdi-chevron-up</w-icon>
+      </div>
+      <div title="Add an Item" v-on:click="setItemCount(1)" v-bind:class="{ 'grey-light3': hasItems }"
+        class="black xs1 pt2 pb2 text-center">{{ item.count }}</div>
+      <div v-on:click="setItemCount(-1)" class="xs1 itemActions" title="Remove an Item">
+        <w-transition-slide left>
+          <w-icon lg v-if="hasItems">mdi mdi-chevron-down</w-icon>
+        </w-transition-slide>
+      </div>
     </w-flex>
   </li>
 </template>
@@ -93,7 +95,6 @@ export default {
               alert('An Error ocurred obtaining a lists items');
             }
           });
-
       }
     },
     updateObjs() {
@@ -119,13 +120,17 @@ export default {
 
 .categories div {
   display: inline-block;
-  white-space: hidden;
+  white-space: nowrap;
 }
 
 .categories {
   overflow: hidden;
   white-space: nowrap;
   display: block;
+}
+
+.category {
+  background-color: #93c47d;
 }
 
 li {
@@ -157,33 +162,12 @@ li {
   white-space: hidden;
 }
 
-.itemName:hover::after {
-  content: url("../assets/plus-thick.svg");
-  vertical-align: text-bottom;
-  float: right;
-  display: inline-block;
-  position: relative;
-  width: 18px;
-  height: 18px;
-}
-
-.itenNameMissing:hover::after {
-  content: url("../assets/arrow-up-thick.svg");
-  vertical-align: text-bottom;
-  float: right;
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-}
-
-.itemCount {
-  float: right;
-  width: 40px;
-}
-
 .itemActions {
   padding-top: 6px;
   opacity: 0.7;
+}
+
+.w45 {
   width: 45px;
 }
 

@@ -5,7 +5,23 @@ const helpers = require('../utils/helpers');
 router.get('/:user_id', function (request, response) {
     helpers.isAuthorized(request, response).then(() => {
         helpers.models.Users.findByPk(request.params.user_id, { attributes: ['user_id', 'name', 'email'] }).then((data) => {
-            if (data) {
+            if (data.length>0) {
+                response.json(data);
+            } else {
+                response.status(404).send();
+            }
+        });
+    });
+});
+router.get('/', function (request, response) {
+    helpers.isAuthorized(request, response).then((cookies) => {
+        helpers.models.Users.findAll(
+            {
+                attributes: ['user_id', 'name', 'email'],
+                include: {model: helpers.models.Account_Users, where: {account_id : cookies.account_id}  }
+            }
+            ).then((data) => {
+            if (data.length>0) {
                 response.json(data);
             } else {
                 response.status(404).send();
@@ -63,6 +79,108 @@ router.patch('/login/:email', function (request, response) {
             }
         });
     }
+});
+//insert a user
+router.post('/', function (request, response) {
+    helpers.isAuthorized(request, response).then((cookies) => {
+        if (request.body.name && request.body.email) {
+            //confirm they are account owner
+            helpers.models.Account_Users.findAll( { where: {user_id: cookies.user_id, account_id: cookies.account_id } }
+                ).then((data) => {
+                let inviteUserData = {};
+                if (data.length>0) {
+                    //Check if user already exists
+                    helpers.models.Account_Users.findAll( { where: {email: request.body.email, account_id: cookies.account_id } }
+                        ).then((ExistingUserData) => {
+                        if (data.length === 0) {
+                            //insert User
+                            let new_auth_id = helpers.crypto.randomBytes(20).toString('hex');
+                            helpers.models.Users.create( { name:  request.body.name, email: request.body.email, password: 'newUser', auth_id: new_auth_id }, { returning: true, plain: true }
+                            ).then((userData) => {
+                                if (userData.user_id > 0) {
+                                    inviteUserData = userData;
+                                    
+                                } else {
+                                    response.status(404).send();
+                                }
+                            });
+                        } else {
+                            //Existing user found, invite them instead
+                            inviteUserData = ExistingUserData;
+                        }
+                        //insert account user
+                        helpers.models.Account_Users.create(
+                            { user_id:  inviteUserData.user_id, account_id: cookies.account_id }, { returning: true, plain: true }
+                        ).then((data) => {
+                            if (data.account_user_id>0) {
+                                //Send Invite Email
+                                //send reset email
+                                let nodemailer = require('nodemailer');
+                                var transporter = nodemailer.createTransport({
+                                    service: 'gmail',
+                                    auth: {
+                                        user: process.env.EMAIL_USERNAME,
+                                        pass: process.env.EMAIL_PASSWORD
+                                    }
+                                });
+                                let registerURL = process.env.ORIGIN_URL;
+                                let msg = 'Hello!<br><br>You have been invited to join a My Grocery List account.<br>Open this link in your browser to login<br><br><a href="' + registerURL + '">' +registerURL;
+                                if (inviteUserData.password==='newUser') {
+                                    registerURL += process.env.ORIGIN_URL + '/reset/' + inviteUserData.user_id +
+                                    '?new=true&email=' + inviteUserData.email +
+                                    '&auth_id=' + inviteUserData.auth_id +
+                                    '&account_id=' + cookies.account_id;
+                                    msg = 'Hello!<br><br>You have been invited to join a My Grocery List account.<br>Open this link in your browser to set your password and login!<br><br><a href="' + registerURL + '">' +registerURL;
+                                }
+                                var mailOptions = {
+                                    from: process.env.EMAIL_USERNAME,
+                                    to: request.body.email,
+                                    subject: 'My Grocery List Invite',
+                                    html: msg
+                                };
+                                transporter.sendMail(mailOptions, function (error, info) {
+                                    if (error) {
+                                        console.log(error);
+                                    } else {
+                                        console.log('Email sent: ' + info.response);
+                                    }
+                                    response.status(200).send();
+                                });
+                                //If all went well, return new user
+                                response.json(inviteUserData);
+                            } else {
+                                response.status(404).send();
+                            }
+                        });
+                });
+                } else {
+                    response.status(404).send();
+                }
+            });
+        } else {
+            response.status(404).send();
+        }
+    });
+});
+//delete a user
+router.delete('/:store_id', function (request, response) {
+    helpers.isAuthorized(request, response).then((cookies) => {
+        if (request.params.store_id) {
+            helpers.models.Stores.destroy(
+                {
+                    where: { store_id: request.params.store_id, account_id: cookies.account_id },
+                }
+            ).then((data) => {
+                if (data.length>0) {
+                    response.json(data);
+                } else {
+                    response.status(404).send();
+                }
+            });
+        } else {
+            response.status(404).send();
+        }
+    });
 });
 module.exports = router;
 

@@ -86,6 +86,15 @@ const router = createRouter({
       beforeEnter() {
         return isAuthenticated();
       }
+    },
+    {
+      path: '/users',
+      name: 'Users',
+      component: () => import('../views/UsersVue.vue'),
+      props: true,
+      beforeEnter() {
+        return isAuthenticated();
+      }
     }
   ]
 });

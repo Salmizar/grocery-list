@@ -8,7 +8,7 @@
           <w-input maxlength="255" v-model="confirmPassword" class="ma1" :validators="[validators.required, validators.passwordMatch]" type="password">Confirm Password</w-input>
           <w-alert v-if="passwordReset" success light no-border>Your password has been reset, redirecting you to your account</w-alert>
         </section>
-        <w-button class="ma1" xl bg-color="success" type="submit" :loading="submitloading" @click="submitLoading()">Update Password</w-button>
+        <w-button class="ma1" xl bg-color="success" type="submit" :loading="submitloading" @click="submitLoading()">{{(this.$route.query.new==='true')?'Set':'Update'}} Password</w-button>
       </w-form>
       <nav>
         Already have an account? <router-link :to="{ name: 'Login' }">Login</router-link> now.

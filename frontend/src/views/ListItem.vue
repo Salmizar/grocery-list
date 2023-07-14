@@ -1,6 +1,6 @@
 <template>
   <li v-if="firstInCategory">
-    <w-flex justify-space-between class="pt2 pb2 pl3 pr3 success-light1--bg white">
+    <w-flex justify-space-between class="pt2 pb2 pl3 white category">
       <div>{{ categoryName }}</div>
     </w-flex>
   </li>
@@ -12,9 +12,10 @@
           <span v-if="item.count === 0"> - Done</span>
         </div>
         <w-transition-slide left>
-          <div v-on:dblclick="setItemCount(0)" v-if="(item.count > 0)" class="xs2 itemCount pr3 pt2">x {{ item.count }}
+          <div v-on:dblclick="setItemCount(0)" v-if="(item.count > 0)" class="xs1 text-center pt2">{{ item.count }}
           </div>
         </w-transition-slide>
+        <div class="xs1">&nbsp;</div>
       </w-flex>
     </li>
   </w-transition-expand>
@@ -89,11 +90,9 @@ li {
   border-bottom: 1px solid darkgray;
 }
 
-.itemCount {
-  text-align: right;
-  width: 60px;
+.category {
+    background-color: #93c47d;
 }
-
 
 @keyframes fadeIn {
   0% {
