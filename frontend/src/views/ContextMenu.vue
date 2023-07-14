@@ -10,6 +10,7 @@
                     <li v-on:click="edit('Categories')">Categories</li>
                     <li v-on:click="edit('Items')">Items</li>
                     <li v-on:click="edit('Stores')">Stores</li>
+                    <li v-on:click="edit('Users')">Users</li>
                 </ul>
             </w-transition-slide>
         </li>

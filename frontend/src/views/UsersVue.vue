@@ -2,20 +2,20 @@
   <div>
     <header>
       <ContextMenu :showListOptions="false" />
-      <h2>Stores</h2>
+      <h2>Users</h2>
     </header>
-    <w-button xl bg-color="light-blue-light5" @click="toggleAddNewItem" class="fill-width">{{ 'Add a Store' }}</w-button>
+    <w-button xl bg-color="light-blue-light5" @click="toggleAddNewItem" class="fill-width">{{ 'Add a User' }}</w-button>
     <w-transition-expand y>
       <div v-if="addItem" class="add-item">
-        <AddEditMisc :item="{}" type="new" :index="0" v-on:updateItem="addNewItem" v-on:cancelItem="cancelItem"
+        <AddEditUser :item="{}" type="new" :index="0" v-on:updateItem="addNewItem" v-on:cancelItem="cancelItem"
           v-on:deleteItem="toggleAddNewItem" />
       </div>
     </w-transition-expand>
     <main>
       <ol>
         <MiscItem v-on:updateItem="updateItem" v-on:cancelItem="cancelItem" v-on:deleteItem="deleteItem"
-          v-for="(item, index) in items" type="store" :item="item" :name="item.name" :index="index"
-          :key="item.store_id" />
+          v-for="(item, index) in items" type="user" :item="item" :name="item.name" :index="index"
+          :key="item.user_id" />
       </ol>
       <LoadingFooter :loading="loading" :itemsLength="items.length" />
     </main>
@@ -26,14 +26,14 @@
 import axios from "axios";
 import ContextMenu from "@/views/ContextMenu.vue";
 import MiscItem from '@/components/MiscItem.vue';
+import AddEditUser from '@/views/AddEditUser.vue';
 import LoadingFooter from "@/components/LoadingFooter.vue";
-import AddEditMisc from '@/views/AddEditMisc.vue';
 export default {
   components: {
     MiscItem,
     ContextMenu,
     LoadingFooter,
-    AddEditMisc
+    AddEditUser
 
   },
   data: () => ({
@@ -45,9 +45,9 @@ export default {
     toggleAddNewItem() {
       this.addItem = !this.addItem;
     },
-    addNewItem(name) {
-      axios.post(process.env.VUE_APP_API_URL + '/api/stores/',
-        { name: name },
+    addNewItem(name, email) {
+      axios.post(process.env.VUE_APP_API_URL + '/api/users/',
+        { name: name, email: email },
         { withCredentials: true }
       )
         .then((response) => {
@@ -73,14 +73,14 @@ export default {
     },
     updateStorage() {
       this.loading = false;
-      window.localStorage.setItem("mygrocerylist-stores", JSON.stringify(this.items));
+      window.localStorage.setItem("mygrocerylist-users", JSON.stringify(this.items));
     },
     updateItem(name, item) {
-      axios.patch(process.env.VUE_APP_API_URL + '/api/stores/' + item.store_id, { name: name }, { withCredentials: true })
+      axios.patch(process.env.VUE_APP_API_URL + '/api/users/' + item.user_id, { name: name }, { withCredentials: true })
         .then((response) => {
           if (response.status === 200) {
             item.name = name;
-            this.updateStorage();
+            this.loading = false;
           }
         })
         .catch(error => {
@@ -93,22 +93,23 @@ export default {
       this.addItem = false;
     },
     deleteItem(item) {
-      axios.delete(process.env.VUE_APP_API_URL + '/api/stores/' + item.store_id, { withCredentials: true })
+      console.log('deleteItem',item);
+      /*axios.delete(process.env.VUE_APP_API_URL + '/api/users/' + item.user_id, { withCredentials: true })
         .then((response) => {
           if (response.status === 200) {
-            this.items = this.items.filter((itemtoCheck) => itemtoCheck.store_id != item.store_id);
-            this.updateStorage();
+            this.items = this.items.filter((itemtoCheck) => itemtoCheck.user_id != item.user_id);
+            this.loading = false;
           }
         })
         .catch(error => {
           if (error.response.status === 401) {
             this.$router.push({ name: 'Login' });
           }
-        });
+        });*/
     },
     getItems() {
       this.loading = true;
-      axios.get(process.env.VUE_APP_API_URL + '/api/stores/', { withCredentials: true })
+      axios.get(process.env.VUE_APP_API_URL + '/api/users/', { withCredentials: true })
         .then((response) => {
           if (response.status === 200) {
             this.loading = false;

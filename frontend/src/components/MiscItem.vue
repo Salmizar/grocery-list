@@ -1,6 +1,6 @@
 <template>
     <li>
-        <w-flex v-bind:class="{ 'success-light1--bg white itemCategory': type === 'category' }" class="item">
+        <w-flex v-bind:class="{ 'white itemCategory': type === 'category' }" class="item">
             <div v-bind:class="{ 'open': editing }" class="xs12 shadowboxease">
                 <div v-on:click="editItem" class="pl3 xs11 pointer pt2 pb2" title="Click to Edit">{{ name }}</div>
                 <div class="xs1" v-if="type === 'category'">
@@ -15,7 +15,9 @@
         </w-flex>
         <w-transition-expand y>
             <div v-if="editing">
-                <AddEditMisc :item="item" :type="type" :index="index" v-on:updateItem="updateItem"
+                <AddEditMisc :item="item" :type="type" v-if="type!='user'" :index="index" v-on:updateItem="updateItem"
+                    v-on:deleteItem="deleteItem" />
+                <AddEditUser :item="item" :type="type" v-if="type==='user'" :index="index" v-on:updateItem="updateItem"
                     v-on:deleteItem="deleteItem" />
             </div>
         </w-transition-expand>
@@ -23,6 +25,7 @@
 </template>
 <script>
 import AddEditMisc from '@/views/AddEditMisc.vue';
+import AddEditUser from '@/views/AddEditUser.vue';
 //import axios from "axios";
 export default {
     emits: [
@@ -31,7 +34,8 @@ export default {
         'updateItemOrder'
     ],
     components: {
-        AddEditMisc
+        AddEditMisc,
+        AddEditUser
     },
     data: () => ({
         editing: false
@@ -104,7 +108,9 @@ li {
 .item:hover {
     background-color: #F5F5F5;
 }
-
+.itemCategory {
+    background-color: #93c47d;
+}
 .itemCategory:hover {
     background-color: #a4ff96;
 }</style>

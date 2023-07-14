@@ -20,6 +20,9 @@ api.use('/api/list_items/', require('./routes/list_items'));
 /**
  * Configure associations
  */
+models.Users.hasMany(models.Account_Users, { foreignKey: 'account_id' });
+models.Account_Users.belongsTo(models.Users, { foreignKey: 'account_id' });
+
 models.Accounts.hasMany(models.Account_Users, { foreignKey: 'account_id' });
 models.Account_Users.belongsTo(models.Accounts, { foreignKey: 'account_id' });
 

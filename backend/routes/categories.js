@@ -11,7 +11,7 @@ router.get('/', function (request, response) {
                 ]
             }
         ).then((data) => {
-            if (data) {
+            if (data.length>0) {
                 response.json(data);
             } else {
                 response.status(404).send();
