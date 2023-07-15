@@ -4,7 +4,7 @@
       <h2>Users</h2>
       <ContextMenu :showListOptions="false" />
     </header>
-    <w-button v-if="isAdmin" xl bg-color="light-blue-light5" v-on:click="toggleAddNewItem" class="fill-width">{{ 'Add a User' }}</w-button>
+    <w-button v-if="isAdmin" xl bg-color="info" v-on:click="toggleAddNewItem" class="fill-width">{{ 'Add a User' }}</w-button>
     <w-transition-expand y>
       <div v-if="addItem" class="add-item">
         <AddEditUser :item="{}" type="new" :index="0" v-on:updateItem="addNewItem" v-on:cancelItem="cancelItem"
@@ -138,18 +138,7 @@ export default {
 }
 </script>
 <style scoped>
-header {
-  border-bottom: 1px solid darkgray;
-  text-align: center;
-  height: 27px;
-}
-h2 {
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  width: 100%;
-}
-
+/* header/h2 tags in app.vue*/
 .add-item {
   border-bottom: 1px solid darkgray;
 

@@ -5,14 +5,14 @@
     </w-flex>
   </li>
   <w-transition-expand y>
-    <li v-if="showItem()">
+    <li v-if="showItem()" v-on:click="setItemCount(-1)">
       <w-flex class="item" justify-space-between v-bind:class="{ 'itemDone grey-light3': item.count === 0 }">
-        <div v-on:click="setItemCount(-1)" class="pt2 pb2 pl3 xs10 itemName">
+        <div class="pt2 pb2 pl3 xs10 itemName">
           {{ itemName }}
           <span v-if="item.count === 0"> - Done</span>
         </div>
         <w-transition-slide left>
-          <div v-on:dblclick="setItemCount(0)" v-if="(item.count > 0)" class="xs1 text-center pt2">{{ item.count }}
+          <div v-if="(item.count > 0)" class="xs1 text-center pt2">{{ item.count }}
           </div>
         </w-transition-slide>
         <div class="xs1">&nbsp;</div>
@@ -59,7 +59,8 @@ export default {
         })
         .catch(error => {
           if (error.response.status === 401) {
-            alert('An Error ocurred obtaining a lists items');
+            alert('An Error ocurred updating the item count');
+              this.$router.push({ name: "Login" });
           }
         });
     },
@@ -74,7 +75,7 @@ export default {
     },
     updateObjs() {
       if (this.item && this.item.item) {
-        this.categoryName = this.item.item.category.name;
+        this.categoryName = ((this.item.item.category)?this.item.item.category.name:'Uncategorized');
         this.itemName = this.item.item.name;
         this.firstInCategory = this.index === 0 || this.$parent.items[this.index - 1].item.category_id != this.item.item.category_id;
       }
@@ -92,6 +93,8 @@ li {
 
 .category {
     background-color: #93c47d;
+    font-weight: bold;
+    text-shadow: 0 0 1px #000;
 }
 
 @keyframes fadeIn {
@@ -115,7 +118,7 @@ li {
 }
 
 .item:hover {
-  background-color: #F5F5F5;
+  background-color: rgba(200, 200, 200, 0.2);
 }
 
 .itemDone {
@@ -126,17 +129,4 @@ li {
   overflow: hidden;
   white-space: nowrap;
 }
-
-.itemCount:hover {
-  background-image: linear-gradient(to right, #F7F7F7, #e4e4e4);
-}
-
-.itemCount:hover::before {
-  content: url("../assets/arrow-down-thick.svg");
-  vertical-align: text-bottom;
-  display: inline-block;
-  width: 14px;
-  height: 16px;
-  margin-right: 11px;
-
-}</style>
+</style>

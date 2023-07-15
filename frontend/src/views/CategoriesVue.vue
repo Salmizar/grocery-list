@@ -4,7 +4,7 @@
       <h2>Categories</h2>
       <ContextMenu :showListOptions="false" />
     </header>
-    <w-button xl bg-color="light-blue-light5" v-on:click="toggleAddNewItem" class="fill-width">{{ 'Add a Category'
+    <w-button xl bg-color="info" v-on:click="toggleAddNewItem" class="fill-width">{{ 'Add a Category'
     }}</w-button>
     <w-transition-expand y>
       <div v-if="addItem">
@@ -145,15 +145,5 @@ export default {
 }
 </script>
 <style scoped>
-header {
-  border-bottom: 1px solid darkgray;
-  text-align: center;
-  height: 27px;
-}
-h2 {
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  width: 100%;
-}
+/* header/h2 tags in app.vue*/
 </style>

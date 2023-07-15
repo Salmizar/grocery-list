@@ -16,7 +16,7 @@
         <w-icon lg>mdi mdi-chevron-up</w-icon>
       </div>
       <div title="Add an Item" v-on:click="setItemCount(1)" v-bind:class="{ 'grey-light3': hasItems }"
-        class="black xs1 pt2 pb2 text-center">{{ item.count }}</div>
+        class="xs1 pt2 pb2 text-center">{{ item.count }}</div>
       <div v-on:click="setItemCount(-1)" class="xs1 itemActions" title="Remove an Item">
         <w-transition-slide left>
           <w-icon lg v-if="hasItems">mdi mdi-chevron-down</w-icon>
@@ -52,7 +52,8 @@ export default {
           })
           .catch(error => {
             if (error.response.status === 401) {
-              alert('An Error ocurred obtaining a lists items');
+              alert('An Error ocurred deleting an item');
+              this.$router.push({ name: "Login" });
             }
           });
       } else {
@@ -67,7 +68,8 @@ export default {
           })
           .catch(error => {
             if (error.response.status === 401) {
-              alert('An Error ocurred obtaining a lists items');
+              alert('An Error ocurred updating the items count');
+              this.$router.push({ name: "Login" });
             }
           });
       }
@@ -92,7 +94,8 @@ export default {
           })
           .catch(error => {
             if (error.response.status === 401) {
-              alert('An Error ocurred obtaining a lists items');
+              alert('An Error ocurred inserting a new item');
+              this.$router.push({ name: "Login" });
             }
           });
       }
@@ -127,6 +130,8 @@ export default {
   overflow: hidden;
   white-space: nowrap;
   display: block;
+  font-weight: bold;
+  text-shadow: 0 0 1px #000;
 }
 
 .category {
@@ -141,14 +146,10 @@ li {
   cursor: pointer;
   animation: fadeIn 0.3s linear;
   white-space: nowrap;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
 
 .item:hover {
-  background-color: #F5F5F5;
+  background-color: rgba(200, 200, 200, 0.2);
 }
 
 .itemName {
