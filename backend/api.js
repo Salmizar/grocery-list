@@ -11,7 +11,6 @@ api.use('/api/sendreset/', require('./routes/sendreset'));
 api.use('/api/reset/', require('./routes/reset'));
 api.use('/api/accounts/', require('./routes/accounts'));
 api.use('/api/users/', require('./routes/users'));
-api.use('/api/account_users/', require('./routes/account_users'));
 api.use('/api/categories/', require('./routes/categories'));
 api.use('/api/stores/', require('./routes/stores'));
 api.use('/api/items/', require('./routes/items'));
@@ -20,6 +19,9 @@ api.use('/api/list_items/', require('./routes/list_items'));
 /**
  * Configure associations
  */
+models.Users.hasMany(models.Accounts, { foreignKey: 'account_id' });
+models.Accounts.belongsTo(models.Users, { foreignKey: 'account_id' });
+
 models.Users.hasMany(models.Account_Users, { foreignKey: 'account_id' });
 models.Account_Users.belongsTo(models.Users, { foreignKey: 'account_id' });
 

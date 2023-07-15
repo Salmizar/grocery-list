@@ -32,7 +32,8 @@ router.patch('/', function (request, response) {
                 let cookies = [
                     helpers.cookie.serialize('account_id', String(request.body.account_id), helpers.cookieParams),
                     helpers.cookie.serialize('user_id', String(dataCopy.user_id), helpers.cookieParams),
-                    helpers.cookie.serialize('auth_id', String(new_auth_id), helpers.cookieParams)
+                    helpers.cookie.serialize('auth_id', String(new_auth_id), helpers.cookieParams),
+                    helpers.cookie.serialize('isAdmin', String('false'), helpers.cookieParams)
                 ];
                 response.setHeader('Set-Cookie', cookies)
                     .status(200).send();
@@ -41,7 +42,7 @@ router.patch('/', function (request, response) {
                     response.status(401).send();
                 });
         } else {
-            //new account resgistration
+            //new account registration
             let reps = {
                 replacements: {
                     accountName: accountName,
@@ -58,7 +59,8 @@ router.patch('/', function (request, response) {
                     let cookies = [
                         helpers.cookie.serialize('account_id', String(data[0][0].account_id), helpers.cookieParams),
                         helpers.cookie.serialize('user_id', String(data[0][0].user_id), helpers.cookieParams),
-                        helpers.cookie.serialize('auth_id', new_auth_id, helpers.cookieParams)
+                        helpers.cookie.serialize('auth_id', String(new_auth_id), helpers.cookieParams),
+                        helpers.cookie.serialize('isAdmin', String('true'), helpers.cookieParams)
                     ];
                     response.setHeader('Set-Cookie', cookies)
                         .json(data[0]);

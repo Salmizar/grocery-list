@@ -1,10 +1,10 @@
 <template>
   <div>
     <header>
-      <ContextMenu :showListOptions="false" />
       <h2>Stores</h2>
+      <ContextMenu :showListOptions="false" />
     </header>
-    <w-button xl bg-color="light-blue-light5" @click="toggleAddNewItem" class="fill-width">{{ 'Add a Store' }}</w-button>
+    <w-button xl bg-color="light-blue-light5" v-on:click="toggleAddNewItem" class="fill-width">{{ 'Add a Store' }}</w-button>
     <w-transition-expand y>
       <div v-if="addItem" class="add-item">
         <AddEditMisc :item="{}" type="new" :index="0" v-on:updateItem="addNewItem" v-on:cancelItem="cancelItem"
@@ -131,6 +131,13 @@ export default {
 header {
   border-bottom: 1px solid darkgray;
   text-align: center;
+  height: 27px;
+}
+h2 {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
 }
 
 .add-item {

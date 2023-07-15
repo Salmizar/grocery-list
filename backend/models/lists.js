@@ -12,6 +12,11 @@ module.exports = (sequelize, DataTypes) => {
 			autoIncrement: true,
             primaryKey: true
         },
+        account_id: {
+            field: 'account_id',
+            allowNull: false,
+            type: DataTypes.INTEGER
+        },
         name: {
             field: 'name',
             allowNull: false,

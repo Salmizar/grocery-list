@@ -3,7 +3,7 @@ const router = express.Router();
 const helpers = require('../utils/helpers');
 
 router.get('/', function (request, response) {
-    helpers.isAuthorized(request, response).then((cookies) => {
+    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
         helpers.models.Accounts.findAll(
             {
                 where: { user_id: cookies.user_id }
@@ -14,6 +14,9 @@ router.get('/', function (request, response) {
             } else {
                 response.status(404).send();
             }
+        })
+        .catch(() => {
+            response.status(404).send();
         });
     });
 });

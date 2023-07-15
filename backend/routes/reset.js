@@ -14,18 +14,37 @@ router.patch('/:email', function (request, response) {
                 auth_id: new_auth_id
             },
             {
-                where: { user_id: request.body.user_id, auth_id: request.body.auth_id }
+                where: { user_id: request.body.user_id, auth_id: request.body.auth_id },
+                returning: true,
+                plain: true
             }
         ).then((data) => {
             if (data.length > 0) {
-                let cookies = [
-                    helpers.cookie.serialize('account_id', String(request.body.account_id), helpers.cookieParams),
-                    helpers.cookie.serialize('user_id', String(request.body.user_id), helpers.cookieParams),
-                    helpers.cookie.serialize('auth_id', String(new_auth_id), helpers.cookieParams)
-                ];
-                response.setHeader('Set-Cookie', cookies)
-                    .status(200).send();
+                //Obtain admin status
+                helpers.models.Users.findAll(
+                    {
+                        include: [{ model: helpers.models.Account_Users, include: { model: helpers.models.Accounts, where: { user_id: data[1].dataValues.user_id } } }],
+                        where: { user_id: data[1].dataValues.user_id, auth_id: new_auth_id },
+                    }
+                ).then((user) => {
+                    let cookies = [
+                        helpers.cookie.serialize('account_id', String(request.body.account_id), helpers.cookieParams),
+                        helpers.cookie.serialize('user_id', String(request.body.user_id), helpers.cookieParams),
+                        helpers.cookie.serialize('auth_id', String(new_auth_id), helpers.cookieParams),
+                        helpers.cookie.serialize('isAdmin', String(user[0].account_users.length > 0), helpers.cookieParams)
+                    ];
+                    response.setHeader('Set-Cookie', cookies)
+                        .status(200).send();
+                })
+                .catch(() => {
+                    response.status(404).send();
+                });
+            } else {
+                response.status(404).send();
             }
+        })
+        .catch(() => {
+            response.status(404).send();
         });
     } else {
         response.status(401).send();

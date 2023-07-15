@@ -18,14 +18,15 @@ exports.isAuthorized = (request, response) => {
         if (cookies.user_id && cookies.auth_id && cookies.account_id) {
             models.Users.findAll(
                 {
-                    include: [{ model: models.Account_Users }],
+                    include: [{ model: models.Account_Users, include: { model: models.Accounts, where: {user_id:cookies.user_id}} }],
                     where: { user_id: cookies.user_id, auth_id: cookies.auth_id }
                 }
             ).then((data) => {
                 if (data.length === 0) {
                     response.status(401).send();
                 } else {
-                    resolve(cookies);
+                    let isAdmin = (data[0].account_users.length>0);
+                    resolve([cookies, isAdmin]);
                 }
             });
         } else {

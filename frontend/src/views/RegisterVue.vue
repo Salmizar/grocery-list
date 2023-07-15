@@ -12,9 +12,9 @@
             type="password">Password</w-input>
           <w-input maxlength="50" v-if="displayAccountName" v-model="accountName" class="ma1" :validators="[validators.accountNameRequired]">Account Name</w-input>
         </section>
-        <w-button class="ma1" xl bg-color="warning" type="reset" @click="resetForm()">Reset</w-button>
+        <w-button class="ma1" xl bg-color="warning" type="reset" v-on:click="resetForm()">Reset</w-button>
         <w-button class="ma1" xl bg-color="success" type="submit" :loading="submitloading"
-          @click="submitLoading()">Register</w-button>
+          v-on:click="submitLoading()">Register</w-button>
       </w-form>
       <nav>
         Already have an account? <router-link :to="{ name: 'Login' }">Login</router-link> now.

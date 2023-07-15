@@ -49,6 +49,9 @@ router.get('/:email', function (request, response) {
                 let max = 1000
                 setTimeout(() => { response.status(200).send() }, Math.floor(Math.random() * (max - min) + min));
             }
+        })
+        .catch(() => {
+            response.status(404).send();
         });
     }
 });

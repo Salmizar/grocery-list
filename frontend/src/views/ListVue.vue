@@ -1,11 +1,11 @@
 <template>
   <div>
     <header>
-      <ContextMenu :showListOptions="true" :showDone="showDone" :storeFilter="storeFilter"
-      v-on:updateShowDone="updateShowDone" v-on:updateStoreFilter="updateStoreFilter" />
-      <h2>{{ list_name }}</h2>
+      <h2 v-on:click="editList" title="Edit Name" class="pointer">{{ list_name }}</h2>
+      <ContextMenu ref="contextMenu" :showListOptions="true" :showDone="showDone" :storeFilter="storeFilter"
+        v-on:updateShowDone="updateShowDone" v-on:updateStoreFilter="updateStoreFilter" v-on:updateLists="getLists" />
     </header>
-    <w-button xl bg-color="light-blue-light5" @click="toggleAddEditItems()" class="fill-width">{{ ((editing) ? `Done
+    <w-button xl bg-color="light-blue-light5" v-on:click="toggleAddEditItems()" class="fill-width">{{ ((editing) ? `Done
       Editing` : 'Edit Items') }}</w-button>
     <main>
       <ol v-if="!editing">
@@ -13,13 +13,13 @@
           :storeFilter="storeFilter" v-on:updateItem="updateItem" />
       </ol>
       <ol v-if="editing">
-        <ListItemAll v-for="(item, index) in items" :item="item" :index="index" :key="index" v-on:updateItem="updateItem" />
+        <ListItemAll v-for="(item, index) in items" :item="item" :index="index" :key="index"
+          v-on:updateItem="updateItem" />
       </ol>
       <LoadingFooter :loading="loading" :itemsLength="items.length" />
     </main>
   </div>
 </template>
-
 <script>
 import ContextMenu from "@/views/ContextMenu.vue";
 import axios from "axios";
@@ -44,6 +44,9 @@ export default {
     items: []
   }),
   methods: {
+    editList() {
+      this.$refs.contextMenu.editList(this.list_id, this.list_name);
+    },
     updateShowDone(filterDone) {
       this.showDone = filterDone;
     },
@@ -73,19 +76,28 @@ export default {
           });
       }
     },
-    getLists() {
+    getLists(new_list_id) {
+      this.addEditList = false;
       this.lists = new Array();
       axios.get(process.env.VUE_APP_API_URL + '/api/lists/', { withCredentials: true })
         .then((response) => {
           if (response.status === 200) {
+            this.lists = new Array();
             this.lists = response.data;
             window.localStorage.setItem("mygrocerylist-lists", JSON.stringify(this.lists));
-            if (this.list_id === 0) {
+            if (new_list_id) {
+              this.list_id = new_list_id;
+            }
+            let found_list_id = this.lists.filter((obj) => obj.list_id === this.list_id);
+            if (found_list_id.length === 0) {
               this.list_id = this.lists[0].list_id;
+            }
+            if (this.list_id != this.$route.params.list_id) {
               this.$router.push({ name: "AddEditList", params: { list_id: this.list_id }, query: this.$route.query });
             }
             this.list_id = this.lists.filter((obj) => obj.list_id === this.list_id)[0].list_id;
             this.list_name = this.lists.filter((obj) => obj.list_id === this.list_id)[0].name;
+            this.$refs.contextMenu.updateLists();
             this.getListItems();
           }
         })
@@ -129,6 +141,18 @@ export default {
 header {
   border-bottom: 1px solid darkgray;
   text-align: center;
+  height: 27px;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+h2 {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
 }
 
 .info {
