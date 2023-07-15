@@ -5,7 +5,7 @@
       <ContextMenu ref="contextMenu" :showListOptions="true" :showDone="showDone" :storeFilter="storeFilter"
         v-on:updateShowDone="updateShowDone" v-on:updateStoreFilter="updateStoreFilter" v-on:updateLists="getLists" />
     </header>
-    <w-button xl bg-color="light-blue-light5" v-on:click="toggleAddEditItems()" class="fill-width">{{ ((editing) ? `Done
+    <w-button xl bg-color="info" v-on:click="toggleAddEditItems()" class="fill-width">{{ ((editing) ? `Done
       Editing` : 'Edit Items') }}</w-button>
     <main>
       <ol v-if="!editing">
@@ -71,7 +71,8 @@ export default {
           })
           .catch(error => {
             if (error.response.status === 401) {
-              alert('An Error ocurred obtaining a lists items');
+              alert('An Error ocurred obtaining an item list');
+              this.$router.push({ name: "Login" });
             }
           });
       }
@@ -138,23 +139,10 @@ export default {
 }
 </script>
 <style scoped>
-header {
-  border-bottom: 1px solid darkgray;
-  text-align: center;
-  height: 27px;
-}
-
+/* header/h2 tags in app.vue*/
 .pointer {
   cursor: pointer;
 }
-
-h2 {
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  width: 100%;
-}
-
 .info {
   padding-top: 40px;
   text-align: center;

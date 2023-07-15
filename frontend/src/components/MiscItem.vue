@@ -4,11 +4,12 @@
             <div v-bind:class="{ 'open': editing }" class="xs12 shadowboxease">
                 <div v-on:click="editItem" class="pl3 xs11 pointer pt2 pb2" title="Click to Edit">{{ name }}</div>
                 <div class="xs1" v-if="type === 'category'">
-                    <w-icon class="pt3 pointer" v-if="index > 0" v-on:click="updateItemOrder(-1)" lg
-                        title="Move order up">mdi
+                    <w-icon title="Move order up" class="pt3 pointer" v-if="index > 0" v-on:click="updateItemOrder(-1)"
+                        lg>mdi
                         mdi-arrow-up-thick</w-icon>
-                    <w-icon v-if="index < (this.$parent.items.length - 1)" v-on:click="updateItemOrder(1)" lg
-                        v-bind:class="{ 'pl11': index === 0 }" class="pt3 pl5 pointer" title="Move order down">mdi
+                    <w-icon title="Move order down" v-if="index < (this.$parent.items.length - 1)"
+                        v-on:click="updateItemOrder(1)" lg v-bind:class="{ 'pl11': index === 0 }"
+                        class="pt3 pl5 pointer">mdi
                         mdi-arrow-down-thick</w-icon>
                 </div>
             </div>
@@ -111,8 +112,11 @@ li {
 
 .itemCategory {
     background-color: #93c47d;
+    font-weight: bold;
+    text-shadow: 0 0 1px #000;
 }
 
 .itemCategory:hover {
     background-color: #a4ff96;
-}</style>
+}
+</style>
