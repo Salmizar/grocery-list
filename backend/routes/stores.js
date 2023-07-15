@@ -3,7 +3,7 @@ const router = express.Router();
 const helpers = require('../utils/helpers');
 
 router.get('/', function (request, response) {
-    helpers.isAuthorized(request, response).then((cookies) => {
+    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
         helpers.models.Stores.findAll(
             {
                 where: { account_id: cookies.account_id },
@@ -12,17 +12,16 @@ router.get('/', function (request, response) {
                 ]
             }
         ).then((data) => {
-            if (data) {
-                response.json(data);
-            } else {
-                response.status(404).send();
-            }
+            response.json(data);
+        })
+        .catch(() => {
+            response.status(404).send();
         });
     });
 });
 //update a store
 router.patch('/:store_id', function (request, response) {
-    helpers.isAuthorized(request, response).then((cookies) => {
+    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
         if (request.params.store_id) {
             helpers.models.Stores.update(
                 {
@@ -37,6 +36,9 @@ router.patch('/:store_id', function (request, response) {
                 } else {
                     response.status(404).send();
                 }
+            })
+            .catch(() => {
+                response.status(404).send();
             });
         } else {
             response.status(404).send();
@@ -45,7 +47,7 @@ router.patch('/:store_id', function (request, response) {
 });
 //insert a store
 router.post('/', function (request, response) {
-    helpers.isAuthorized(request, response).then((cookies) => {
+    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
         if (request.body.name) {
             helpers.models.Stores.create(
                 {
@@ -62,6 +64,9 @@ router.post('/', function (request, response) {
                 } else {
                     response.status(404).send();
                 }
+            })
+            .catch(() => {
+                response.status(404).send();
             });
         } else {
             response.status(404).send();
@@ -70,7 +75,7 @@ router.post('/', function (request, response) {
 });
 //delete a store
 router.delete('/:store_id', function (request, response) {
-    helpers.isAuthorized(request, response).then((cookies) => {
+    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
         if (request.params.store_id) {
             helpers.models.Stores.destroy(
                 {
@@ -82,6 +87,9 @@ router.delete('/:store_id', function (request, response) {
                 } else {
                     response.status(404).send();
                 }
+            })
+            .catch(() => {
+                response.status(404).send();
             });
         } else {
             response.status(404).send();

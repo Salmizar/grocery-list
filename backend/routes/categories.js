@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const helpers = require('../utils/helpers')
 router.get('/', function (request, response) {
-    helpers.isAuthorized(request, response).then((cookies) => {
+    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
         helpers.models.Categories.findAll(
             {
                 where: { account_id: cookies.account_id },
@@ -11,17 +11,16 @@ router.get('/', function (request, response) {
                 ]
             }
         ).then((data) => {
-            if (data.length>0) {
-                response.json(data);
-            } else {
-                response.status(404).send();
-            }
+            response.json(data);
+        })
+        .catch(() => {
+            response.status(404).send();
         });
     });
 });
 //update a category
 router.patch('/:category_id', function (request, response) {
-    helpers.isAuthorized(request, response).then((cookies) => {
+    helpers.isAuthorized(request, response).then(([cookies, isAdmin]) => {
         if (request.params.category_id) {
             if (request.body.order_id) {
                 helpers.models.Categories.update(
@@ -46,10 +45,16 @@ router.patch('/:category_id', function (request, response) {
                             } else {
                                 response.status(404).send();
                             }
+                        })
+                        .catch(() => {
+                            response.status(404).send();
                         });
                     } else {
                         response.status(404).send();
                     }
+                })
+                .catch(() => {
+                    response.status(404).send();
                 });
             } else {
                 helpers.models.Categories.update(
@@ -65,6 +70,9 @@ router.patch('/:category_id', function (request, response) {
                     } else {
                         response.status(404).send();
                     }
+                })
+                .catch(() => {
+                    response.status(404).send();
                 });
             }
         } else {
@@ -74,7 +82,7 @@ router.patch('/:category_id', function (request, response) {
 });
 //insert a category
 router.post('/', function (request, response) {
-    helpers.isAuthorized(request, response).then((cookies) => {
+    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
         let order_id = Number(request.body.order_id);
         if (order_id >= 0 && request.body.name) {
             helpers.models.Categories.create(
@@ -93,6 +101,9 @@ router.post('/', function (request, response) {
                 } else {
                     response.status(404).send();
                 }
+            })
+            .catch(() => {
+                response.status(404).send();
             });
         } else {
             response.status(404).send();
@@ -101,7 +112,7 @@ router.post('/', function (request, response) {
 });
 //delete a category
 router.delete('/:category_id', function (request, response) {
-    helpers.isAuthorized(request, response).then((cookies) => {
+    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
         if (request.params.category_id) {
             //Reset items which are associated with category about to be deleted
             helpers.models.Items.update({ category_id: null }, { where: { category_id: request.params.category_id, account_id: cookies.account_id } }
@@ -118,6 +129,9 @@ router.delete('/:category_id', function (request, response) {
                 } else {
                     response.status(404).send();
                 }
+            })
+            .catch(() => {
+                response.status(404).send();
             });
         } else {
             response.status(404).send();

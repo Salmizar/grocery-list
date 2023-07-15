@@ -1,10 +1,10 @@
 <template>
   <div>
     <header>
-      <ContextMenu :showListOptions="false" />
       <h2>Users</h2>
+      <ContextMenu :showListOptions="false" />
     </header>
-    <w-button xl bg-color="light-blue-light5" @click="toggleAddNewItem" class="fill-width">{{ 'Add a User' }}</w-button>
+    <w-button v-if="isAdmin" xl bg-color="light-blue-light5" v-on:click="toggleAddNewItem" class="fill-width">{{ 'Add a User' }}</w-button>
     <w-transition-expand y>
       <div v-if="addItem" class="add-item">
         <AddEditUser :item="{}" type="new" :index="0" v-on:updateItem="addNewItem" v-on:cancelItem="cancelItem"
@@ -39,13 +39,14 @@ export default {
   data: () => ({
     loading: true,
     addItem: false,
+    isAdmin: false,
     items: []
   }),
   methods: {
     toggleAddNewItem() {
       this.addItem = !this.addItem;
     },
-    addNewItem(name, email) {
+    addNewItem(item, name, email) {
       axios.post(process.env.VUE_APP_API_URL + '/api/users/',
         { name: name, email: email },
         { withCredentials: true }
@@ -62,7 +63,6 @@ export default {
               return 0;
             });
             this.items = result;
-            this.updateStorage();
           }
         })
         .catch(error => {
@@ -71,16 +71,25 @@ export default {
           }
         });
     },
-    updateStorage() {
-      this.loading = false;
-      window.localStorage.setItem("mygrocerylist-users", JSON.stringify(this.items));
-    },
-    updateItem(name, item) {
-      axios.patch(process.env.VUE_APP_API_URL + '/api/users/' + item.user_id, { name: name }, { withCredentials: true })
+    updateItem(item, name, email, password) {
+      let parms = {
+        name: name,
+        email: email
+      }
+      if (password) {
+        parms.password = password;
+      }
+      axios.patch(process.env.VUE_APP_API_URL + '/api/users/' + item.user_id, parms, { withCredentials: true })
         .then((response) => {
           if (response.status === 200) {
-            item.name = name;
+            item = response.data;
             this.loading = false;
+            for (let itm in this.items) {
+              if (this.items[itm].user_id === response.data.user_id) {
+                this.items[itm] = response.data;
+              }
+            }
+            item = response.data;
           }
         })
         .catch(error => {
@@ -93,8 +102,7 @@ export default {
       this.addItem = false;
     },
     deleteItem(item) {
-      console.log('deleteItem',item);
-      /*axios.delete(process.env.VUE_APP_API_URL + '/api/users/' + item.user_id, { withCredentials: true })
+      axios.delete(process.env.VUE_APP_API_URL + '/api/users/' + item.user_id, { withCredentials: true })
         .then((response) => {
           if (response.status === 200) {
             this.items = this.items.filter((itemtoCheck) => itemtoCheck.user_id != item.user_id);
@@ -105,7 +113,7 @@ export default {
           if (error.response.status === 401) {
             this.$router.push({ name: 'Login' });
           }
-        });*/
+        });
     },
     getItems() {
       this.loading = true;
@@ -124,6 +132,7 @@ export default {
     }
   },
   mounted() {
+    this.isAdmin = Boolean(window.$cookies.get('isAdmin')==='true');
     this.getItems();
   }
 }
@@ -132,6 +141,13 @@ export default {
 header {
   border-bottom: 1px solid darkgray;
   text-align: center;
+  height: 27px;
+}
+h2 {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
 }
 
 .add-item {

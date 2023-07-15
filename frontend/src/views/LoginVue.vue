@@ -15,9 +15,9 @@
             bg-color="green-light6" @item-click="selectAccount()" class="mt2 ml5 mr5 mb4 grow">
           </w-list>
         </section>
-        <w-button class="ma1" xl bg-color="warning" type="reset" @click="resetForm()">Reset</w-button>
+        <w-button class="ma1" xl bg-color="warning" type="reset" v-on:click="resetForm()">Reset</w-button>
         <w-button class="ma1" xl bg-color="success" type="submit" :loading="submitloading"
-          @click="submitLogin()">Login</w-button>
+          v-on:click="submitLogin()">Login</w-button>
       </w-form>
       <nav>
         <router-link :to="{ name: 'Reset' }">Forgot Password</router-link><br>

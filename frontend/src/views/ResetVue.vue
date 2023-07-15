@@ -8,7 +8,7 @@
         </section>
         <w-alert v-if="requestSent" success light no-border>If there is an account associated with this email address, a
           reset email will be sent.</w-alert>
-        <w-button class="ma1" xl bg-color="success" type="submit" :loading="submitloading" @click="submitLoading()">Send
+        <w-button class="ma1" xl bg-color="success" type="submit" :loading="submitloading" v-on:click="submitLoading()">Send
           password reset email</w-button>
       </w-form>
       <nav>

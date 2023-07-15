@@ -1,10 +1,10 @@
 <template>
   <div>
     <header>
-      <ContextMenu :showListOptions="false" />
       <h2>Categories</h2>
+      <ContextMenu :showListOptions="false" />
     </header>
-    <w-button xl bg-color="light-blue-light5" @click="toggleAddNewItem" class="fill-width">{{ 'Add a Category'
+    <w-button xl bg-color="light-blue-light5" v-on:click="toggleAddNewItem" class="fill-width">{{ 'Add a Category'
     }}</w-button>
     <w-transition-expand y>
       <div v-if="addItem">
@@ -93,7 +93,7 @@ export default {
         });
     },
     updateItem(name, item) {
-      axios.patch(process.env.VUE_APP_API_URL + '/api/categories/' + item.category_id, { name: name, order_id: item.order_id }, { withCredentials: true })
+      axios.patch(process.env.VUE_APP_API_URL + '/api/categories/' + item.category_id, { name: name }, { withCredentials: true })
         .then((response) => {
           if (response.status === 200) {
             this.loading = false;
@@ -148,5 +148,12 @@ export default {
 header {
   border-bottom: 1px solid darkgray;
   text-align: center;
+  height: 27px;
+}
+h2 {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
 }
 </style>

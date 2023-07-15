@@ -15,9 +15,9 @@
         </w-flex>
         <w-transition-expand y>
             <div v-if="editing">
-                <AddEditMisc :item="item" :type="type" v-if="type!='user'" :index="index" v-on:updateItem="updateItem"
+                <AddEditMisc :item="item" :type="type" v-if="type != 'user'" :index="index" v-on:updateItem="updateItem"
                     v-on:deleteItem="deleteItem" />
-                <AddEditUser :item="item" :type="type" v-if="type==='user'" :index="index" v-on:updateItem="updateItem"
+                <AddEditUser :item="item" :type="type" v-if="type === 'user'" :index="index" v-on:updateItem="updateItem"
                     v-on:deleteItem="deleteItem" />
             </div>
         </w-transition-expand>
@@ -108,9 +108,11 @@ li {
 .item:hover {
     background-color: #F5F5F5;
 }
+
 .itemCategory {
     background-color: #93c47d;
 }
+
 .itemCategory:hover {
     background-color: #a4ff96;
 }</style>

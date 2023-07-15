@@ -12,10 +12,10 @@
         <w-confirm v-if="type != 'new'" class="ma1" xl bg-color="error" right question="Are you sure?"
             v-on:confirm="deleteItem">Delete</w-confirm>
         <w-button v-if="type === 'new'" class="ma1" xl bg-color="error"
-            @click="this.$emit('cancelItem')">Cancel</w-button>&nbsp;
-        <w-button v-if="type != 'new'" class="ma1" xl bg-color="warning" @click="resetForm">Reset</w-button>&nbsp;
+            v-on:click="this.$emit('cancelItem')">Cancel</w-button>&nbsp;
+        <w-button v-if="type != 'new'" class="ma1" xl bg-color="warning" v-on:click="resetForm">Reset</w-button>&nbsp;
         <w-button class="ma1" xl bg-color="success" type="submit" :loading="submitloading"
-            @click="updateItem">Save</w-button>
+            v-on:click="updateItem">Save</w-button>
     </w-form>
 </template>
 
@@ -49,11 +49,13 @@ export default {
     },
     methods: {
         updateItem() {
-            this.submitloading = true;
-            if (this.type === 'items' || this.type === 'items-new') {
-                this.$emit('updateItem', this.name, this.item, this.selectedCategory, this.selectedStores);
-            } else {
-                this.$emit('updateItem', this.name, this.item);
+            if (this.valid) {
+                this.submitloading = true;
+                if (this.type === 'items' || this.type === 'items-new') {
+                    this.$emit('updateItem', this.name, this.item, this.selectedCategory, this.selectedStores);
+                } else {
+                    this.$emit('updateItem', this.name, this.item);
+                }
             }
         },
         deleteItem() {

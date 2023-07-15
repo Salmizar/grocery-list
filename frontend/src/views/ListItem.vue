@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     showItem() {
-      if (this.storeFilter>0) {
+      if (this.storeFilter>0 && this.item.item) {
         return this.item.item.store_ids.indexOf(this.storeFilter)>-1 && (this.item.count > 0 || this.showDone) 
       } else {
         return this.item.count > 0 || this.showDone;

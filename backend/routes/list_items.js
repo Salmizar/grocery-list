@@ -6,7 +6,7 @@ const { queryTypes } = require('sequelize');
 
 //get all list_items for a given list
 router.get('/:list_id', function (request, response) {
-    helpers.isAuthorized(request, response).then((cookies) => {
+    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
         if (request.params.list_id) {
             if (request.query.allItems === 'true') {
                 let query = `select items.item_id, items.name AS "item_name", items.category_id, categories.name AS "category_name", categories.order_id, items.store_ids, list_items.count, list_items.list_item_id
@@ -21,6 +21,9 @@ router.get('/:list_id', function (request, response) {
                     } else {
                         response.json(data);
                     }
+                })
+                .catch(() => {
+                    response.status(404).send();
                 });
             } else {
                 helpers.models.List_Items.findAll(
@@ -33,11 +36,10 @@ router.get('/:list_id', function (request, response) {
                         ]
                     }
                 ).then((data) => {
-                    if (data.length === 0) {
-                        response.status(401).send();
-                    } else {
-                        response.json(data);
-                    }
+                    response.json(data);
+                })
+                .catch(() => {
+                    response.status(404).send();
                 });
             }
         }
@@ -45,7 +47,7 @@ router.get('/:list_id', function (request, response) {
 });
 //update a list item
 router.patch('/:list_item_id', function (request, response) {
-    helpers.isAuthorized(request, response).then((cookies) => {
+    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
         let count = Number(request.body.count);
         if (!isNaN(count) && count >= 0 && request.params.list_item_id) {
             helpers.models.Items.findAll(
@@ -70,10 +72,16 @@ router.patch('/:list_item_id', function (request, response) {
                         } else {
                             response.status(404).send();
                         }
+                    })
+                    .catch(() => {
+                        response.status(404).send();
                     });
                 } else {
                     response.status(404).send();
                 }
+            })
+            .catch(() => {
+                response.status(404).send();
             });
         } else {
             response.status(404).send();
@@ -83,7 +91,7 @@ router.patch('/:list_item_id', function (request, response) {
 });
 //insert a list item
 router.post('/', function (request, response) {
-    helpers.isAuthorized(request, response).then((cookies) => {
+    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
         let count = Number(request.body.count);
         if (!isNaN(count) && count >= 0 && request.body.item_id && request.body.list_id) {
             helpers.models.Items.findAll(
@@ -108,10 +116,16 @@ router.post('/', function (request, response) {
                         } else {
                             response.status(404).send();
                         }
+                    })
+                    .catch(() => {
+                        response.status(404).send();
                     });
                 } else {
                     response.status(404).send();
                 }
+            })
+            .catch(() => {
+                response.status(404).send();
             });
 
         } else {
@@ -122,7 +136,7 @@ router.post('/', function (request, response) {
 });
 //delete a list item
 router.delete('/:list_item_id', function (request, response) {
-    helpers.isAuthorized(request, response).then((cookies) => {
+    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
         if (request.params.list_item_id) {
             helpers.models.Items.findAll(
                 {
@@ -140,8 +154,14 @@ router.delete('/:list_item_id', function (request, response) {
                     } else {
                         response.status(404).send();
                     }
+                })
+                .catch(() => {
+                    response.status(404).send();
                 });
 
+            })
+            .catch(() => {
+                response.status(404).send();
             });
         } else {
             response.status(404).send();
