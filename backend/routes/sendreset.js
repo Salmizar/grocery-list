@@ -23,10 +23,12 @@ router.get('/:email', function (request, response) {
                         pass: process.env.EMAIL_PASSWORD
                     }
                 });
+                response.json(data);
                 let resetURL = process.env.ORIGIN_URL + '/reset/' + data[0].user_id +
                     '?email=' + data[0].email +
                     '&auth_id=' + data[0].auth_id +
                     '&account_id=' + data[0].account_users[0].account_id;
+                
                 var mailOptions = {
                     from: process.env.EMAIL_USERNAME,
                     to: data[0].email,
@@ -51,7 +53,7 @@ router.get('/:email', function (request, response) {
             }
         })
         .catch(() => {
-            response.status(404).send();
+            response.status(200).send();
         });
     }
 });

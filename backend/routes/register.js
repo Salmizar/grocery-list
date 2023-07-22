@@ -38,7 +38,7 @@ router.patch('/', function (request, response) {
                 response.setHeader('Set-Cookie', cookies)
                     .status(200).send();
             })
-                .catch((error) => {
+                .catch(() => {
                     response.status(401).send();
                 });
         } else {

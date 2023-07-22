@@ -3,7 +3,7 @@ const router = express.Router();
 const helpers = require('../utils/helpers');
 
 router.get('/', function (request, response) {
-    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
+    helpers.isAuthorized(request, response).then(([cookies]) => {
         helpers.models.Items.findAll(
             {
                 where: { account_id: cookies.account_id },
@@ -21,7 +21,7 @@ router.get('/', function (request, response) {
 });
 //update a item
 router.patch('/:item_id', function (request, response) {
-    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
+    helpers.isAuthorized(request, response).then(([cookies]) => {
         if (!isNaN(Number(request.params.item_id)) && request.body.name && request.body.category_id && request.body.store_ids) {
             helpers.models.Items.update(
                 {
@@ -65,7 +65,7 @@ router.patch('/:item_id', function (request, response) {
 });
 //insert a item
 router.post('/', function (request, response) {
-    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
+    helpers.isAuthorized(request, response).then(([cookies]) => {
         if (request.body.name) {
             let parms = {
                 name: request.body.name,
@@ -100,7 +100,7 @@ router.post('/', function (request, response) {
 });
 //delete a item
 router.delete('/:item_id', function (request, response) {
-    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
+    helpers.isAuthorized(request, response).then(([cookies]) => {
         if (request.params.item_id) {
             helpers.models.Items.destroy({ where: { item_id: request.params.item_id, account_id: cookies.account_id } }
             ).then((data) => {

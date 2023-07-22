@@ -1,5 +1,10 @@
 # frontend
 
+### Deploy to AWS
+```
+aws s3 sync ./dist s3://aws-my-grocery-list
+```
+
 ### Compiles and hot-reloads for development
 ```
 yarn serve

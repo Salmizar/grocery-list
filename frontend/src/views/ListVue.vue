@@ -9,134 +9,126 @@
       Editing` : 'Edit Items') }}</w-button>
     <main>
       <ol v-if="!editing">
-        <ListItem v-for="(item, index) in items" :item="item" :index="index" :key="index" :showDone="showDone"
+        <ListItem v-for="(item, index) in items" :item="item" :items="items" :index="index" :key="index" :showDone="showDone"
           :storeFilter="storeFilter" v-on:updateItem="updateItem" />
       </ol>
       <ol v-if="editing">
-        <ListItemAll v-for="(item, index) in items" :item="item" :index="index" :key="index"
+        <ListItemAll v-for="(item, index) in items" :item="item" :items="items" :index="index" :key="index"
           v-on:updateItem="updateItem" />
       </ol>
       <LoadingFooter :loading="loading" :itemsLength="items.length" />
     </main>
   </div>
 </template>
-<script>
-import ContextMenu from "@/views/ContextMenu.vue";
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
+import ContextMenu from "@/views/ContextMenu.vue";
 import ListItem from '@/views/ListItem.vue';
 import ListItemAll from '@/views/ListItemAll.vue';
 import LoadingFooter from "@/components/LoadingFooter.vue";
-export default {
-  components: {
-    ListItem,
-    ListItemAll,
-    ContextMenu,
-    LoadingFooter
-  },
-  data: () => ({
-    showDone: true,
-    storeFilter: 0,
-    loading: true,
-    editing: false,
-    list_name: '',
-    list_id: 0,
-    lists: [],
-    items: []
-  }),
-  methods: {
-    editList() {
-      this.$refs.contextMenu.editList(this.list_id, this.list_name);
-    },
-    updateShowDone(filterDone) {
-      this.showDone = filterDone;
-    },
-    updateStoreFilter(newStoreFilter) {
-      this.storeFilter = newStoreFilter;
-    },
-    updateItem(index, columns) {
-      for (let column in columns) {
-        this.items[index][column] = columns[column];
-      }
-    },
-    getListItems() {
-      if (this.list_id > 0) {
-        this.loading = true;
-        this.items = new Array();
-        axios.get(process.env.VUE_APP_API_URL + '/api/list_items/' + this.list_id, { withCredentials: true, params: { allItems: this.editing } })
-          .then((response) => {
-            if (response.status === 200) {
-              this.items = response.data;
-              this.loading = false;
-            }
-          })
-          .catch(error => {
-            if (error.response.status === 401) {
-              alert('An Error ocurred obtaining an item list');
-              this.$router.push({ name: "Login" });
-            }
-          });
-      }
-    },
-    getLists(new_list_id) {
-      this.addEditList = false;
-      this.lists = new Array();
-      axios.get(process.env.VUE_APP_API_URL + '/api/lists/', { withCredentials: true })
-        .then((response) => {
-          if (response.status === 200) {
-            this.lists = new Array();
-            this.lists = response.data;
-            window.localStorage.setItem("mygrocerylist-lists", JSON.stringify(this.lists));
-            if (new_list_id) {
-              this.list_id = new_list_id;
-            }
-            let found_list_id = this.lists.filter((obj) => obj.list_id === this.list_id);
-            if (found_list_id.length === 0) {
-              this.list_id = this.lists[0].list_id;
-            }
-            if (this.list_id != this.$route.params.list_id) {
-              this.$router.push({ name: "AddEditList", params: { list_id: this.list_id }, query: this.$route.query });
-            }
-            this.list_id = this.lists.filter((obj) => obj.list_id === this.list_id)[0].list_id;
-            this.list_name = this.lists.filter((obj) => obj.list_id === this.list_id)[0].name;
-            this.$refs.contextMenu.updateLists();
-            this.getListItems();
-          }
-        })
-        .catch(error => {
-          if (error.response.status === 401) {
-            this.$router.push({ name: 'Login' });
-          }
-        });
-    },
-    getStores() {
-      axios.get(process.env.VUE_APP_API_URL + '/api/Stores/', { withCredentials: true })
-        .then((response) => {
-          if (response.status === 200) {
-            window.localStorage.setItem("mygrocerylist-stores", JSON.stringify(response.data));
-          }
-        })
-        .catch(error => {
-          if (error.response.status === 401) {
-            this.$router.push({ name: 'Login' });
-          }
-        });
-    },
-    toggleAddEditItems() {
-      this.editing = !this.editing;
-      this.$router.push({ name: "AddEditList", params: { list_id: this.list_id }, query: (this.editing) ? { a: 'edit' } : {} });
-      setTimeout(() => { this.getListItems() }, 10);
-    }
-  },
-  mounted() {
-    this.editing = (this.$route.query.a === 'edit');
-    this.list_id = ((this.$route.params.list_id != undefined) ? Number(this.$route.params.list_id) : 0);
-    this.showDone = JSON.parse(window.localStorage.getItem("mygrocerylist-filter-done"));
-    this.storeFilter = window.localStorage.getItem("mygrocerylist-filter-storeFilter");
-    this.storeFilter = isNaN(this.storeFilter) ? 0 : Number(this.storeFilter);
-    this.getStores();
-    this.getLists();
-  }
+const router = useRouter();
+const route = useRoute();
+const contextMenu = ref();
+const showDone = ref(true);
+const storeFilter = ref(0);
+const loading = ref(true);
+const editing = ref(false);
+const list_name = ref('');
+const list_id = ref(0);
+const lists = ref([]);
+const items = ref([]);
+const editList = () => {
+  contextMenu.value.editList(list_id.value, list_name.value);
 }
+const updateShowDone = (filterDone) => {
+  showDone.value = filterDone;
+};
+const updateStoreFilter = (newStoreFilter) => {
+  storeFilter.value = newStoreFilter;
+};
+const updateItem = (index, columns) => {
+  for (let column in columns) {
+    items.value[index][column] = columns[column];
+  }
+};
+const getListItems = () => {
+  if (list_id.value > 0) {
+    loading.value = true;
+    items.value = new Array();
+    axios.get(process.env.VUE_APP_API_URL + '/api/list_items/' + list_id.value, { withCredentials: true, params: { allItems: editing.value } })
+      .then((response) => {
+        if (response.status === 200) {
+          items.value = response.data;
+          loading.value = false;
+        }
+      })
+      .catch(error => {
+        if (error.response.status === 401) {
+          alert('An Error ocurred obtaining an item list');
+          router.push({ name: "Login" });
+        }
+      });
+  }
+};
+const getLists = (new_list_id) => {
+  lists.value = new Array();
+  axios.get(process.env.VUE_APP_API_URL + '/api/lists/', { withCredentials: true })
+    .then((response) => {
+      if (response.status === 200) {
+        lists.value = new Array();
+        lists.value = response.data;
+        window.localStorage.setItem("mygrocerylist-lists", JSON.stringify(lists.value));
+        if (new_list_id) {
+          list_id.value = new_list_id;
+        }
+        let found_list_id = lists.value.filter((obj) => obj.list_id === list_id.value);
+        if (found_list_id.length === 0) {
+          list_id.value = lists.value[0].list_id;
+        }
+        if (list_id.value != route.params.list_id) {
+          router.push({ name: "AddEditList", params: { list_id: list_id.value }, query: route.query });
+        }
+        list_id.value = lists.value.filter((obj) => obj.list_id === list_id.value)[0].list_id;
+        list_name.value = lists.value.filter((obj) => obj.list_id === list_id.value)[0].name;
+        contextMenu.value.updateLists();
+        getListItems();
+      }
+    })
+    .catch(error => {
+      if (error.response.status === 401) {
+        router.push({ name: 'Login' });
+      }
+    });
+};
+const getStores = () => {
+  axios.get(process.env.VUE_APP_API_URL + '/api/Stores/', { withCredentials: true })
+    .then((response) => {
+      if (response.status === 200) {
+        window.localStorage.setItem("mygrocerylist-stores", JSON.stringify(response.data));
+      }
+    })
+    .catch(error => {
+      if (error.response.status === 401) {
+        router.push({ name: 'Login' });
+      }
+    });
+};
+const toggleAddEditItems = () => {
+  editing.value = !editing.value;
+  router.push({ name: "AddEditList", params: { list_id: list_id.value }, query: (editing.value) ? { a: 'edit' } : {} });
+  setTimeout(() => { getListItems() }, 10);
+};
+onMounted(() => {
+  editing.value = (route.query.a === 'edit');
+  list_id.value = ((route.params.list_id != undefined) ? Number(route.params.list_id) : 0);
+  showDone.value = JSON.parse(window.localStorage.getItem("mygrocerylist-filter-done"));
+  storeFilter.value = window.localStorage.getItem("mygrocerylist-filter-storeFilter");
+  storeFilter.value = isNaN(storeFilter.value) ? 0 : Number(storeFilter.value);
+  getStores();
+  getLists();
+});
 </script>
 <style scoped>
 /* header/h2 tags in app.vue*/

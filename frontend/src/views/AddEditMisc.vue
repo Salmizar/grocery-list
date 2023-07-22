@@ -12,107 +12,100 @@
         <w-confirm v-if="type != 'new'" class="ma1" xl bg-color="error" right question="Are you sure?"
             v-on:confirm="deleteItem">Delete</w-confirm>
         <w-button v-if="type === 'new'" class="ma1" xl bg-color="error"
-            v-on:click="this.$emit('cancelItem')">Cancel</w-button>&nbsp;
+            v-on:click="emits('cancelItem')">Cancel</w-button>&nbsp;
         <w-button v-if="type != 'new'" class="ma1" xl bg-color="warning" v-on:click="resetForm">Reset</w-button>&nbsp;
         <w-button class="ma1" xl bg-color="success" type="submit" :loading="submitloading"
             v-on:click="updateItem">Save</w-button>
     </w-form>
 </template>
 
-<script>
-export default {
-    emits: [
-        'updateItem',
-        'deleteItem',
-        'cancelItem'
-    ],
-    data: () => ({
-        name: '',
-        valid: null,
-        submitloading: false,
-        validators: {
-            required: value => !!value || "This field is required",
-        },
-        selectedCategory: [],
-        categories: [
-            { label: 'Example', value: 1 }
-        ],
-        selectedStores: [],
-        stores: [
-            { label: 'Example', value: 1 }
-        ]
-    }),
-    props: {
-        type: String,
-        item: Object,
-        index: Number
-    },
-    methods: {
-        updateItem() {
-            if (this.valid) {
-                this.submitloading = true;
-                if (this.type === 'items' || this.type === 'items-new') {
-                    this.$emit('updateItem', this.name, this.item, this.selectedCategory, this.selectedStores);
-                } else {
-                    this.$emit('updateItem', this.name, this.item);
-                }
-            }
-        },
-        deleteItem() {
-            this.submitloading = true;
-            this.$emit('deleteItem', this.item);
-        },
-        resetForm() {
-            this.submitloading = false;
-            this.name = this.item.name;
-            if (this.type === 'items') {
-                this.selectedCategory = Number(this.item.category_id);
-                this.selectedStores = new Array();
-                if (this.item.store_ids) {
-                    this.item.store_ids.split(",").map((iitem) => { this.selectedStores.push(Number(iitem)) });
-                }
-            } else if (this.type === 'items-new') {
-                this.selectedCategory = [];
-                this.selectedStores = [];
-            }
+<script setup>
+import { defineEmits, defineProps, ref, onMounted } from 'vue';
+const name = ref('');
+const valid = ref(null);
+const submitloading = ref(false);
+const validators = {
+    required: value => !!value || "This field is required",
+};
+const selectedCategory = ref([]);
+const categories = ref([
+    { label: 'Example', value: 1 }
+]);
+const selectedStores = ref([]);
+const stores = ref([
+    { label: 'Example', value: 1 }
+]);
+const emits = defineEmits([
+    'updateItem',
+    'deleteItem',
+    'cancelItem'
+]);
+const props = defineProps({
+    type: String,
+    item: Object,
+    index: Number
+});
+const updateItem = () => {
+    if (valid.value) {
+        submitloading.value = true;
+        if (props.type === 'items' || props.type === 'items-new') {
+            emits('updateItem', name.value, props.item, selectedCategory.value, selectedStores.value);
+        } else {
+            emits('updateItem', name.value, props.item);
         }
-    },
-    mounted() {
-        if (this.type === 'items' || this.type === 'items-new') {
-            let formattedCats = new Array();
-            let cats = JSON.parse(window.localStorage.getItem("mygrocerylist-categories"));
-            if (this.type === 'items') {
-                this.selectedCategory = Number(this.item.category_id);
-            } else {
-                this.selectedCategory = Number(this.item.category_id);
-            }
-            for (let cat in cats) {
-                formattedCats.push({ label: cats[cat].name, value: cats[cat].category_id });
-            }
-            this.categories = formattedCats;
-            let formattedStores = new Array();
-            let t_stores = JSON.parse(window.localStorage.getItem("mygrocerylist-stores"));
-            if (this.type === 'items' && this.item.store_ids) {
-                this.item.store_ids.split(",").map((iitem) => { this.selectedStores.push(Number(iitem)) });
-            }
-            for (let t_store in t_stores) {
-                formattedStores.push({ label: t_stores[t_store].name, value: t_stores[t_store].store_id });
-            }
-            this.stores = formattedStores;
-        }
-        this.resetForm();
     }
-}
+};
+const deleteItem = () => {
+    submitloading.value = true;
+    emits('deleteItem', props.item);
+};
+const resetForm = () => {
+    submitloading.value = false;
+    name.value = props.item.name;
+    if (props.type === 'items') {
+        selectedCategory.value = Number(props.item.category_id);
+        selectedStores.value = new Array();
+        if (props.item.store_ids) {
+            props.item.store_ids.split(",").map((item) => { selectedStores.value.push(Number(item)) });
+        }
+    } else if (props.type === 'items-new') {
+        selectedCategory.value = [];
+        selectedStores.value = [];
+    }
+};
+onMounted(() => {
+    if (props.type === 'items' || props.type === 'items-new') {
+        let formattedCats = new Array();
+        let cats = JSON.parse(window.localStorage.getItem("mygrocerylist-categories"));
+        if (props.type === 'items') {
+            selectedCategory.value = Number(props.item.category_id);
+        } else {
+            selectedCategory.value = Number(props.item.category_id);
+        }
+        for (let cat in cats) {
+            formattedCats.push({ label: cats[cat].name, value: cats[cat].category_id });
+        }
+        categories.value = formattedCats;
+        let formattedStores = new Array();
+        let t_stores = JSON.parse(window.localStorage.getItem("mygrocerylist-stores"));
+        if (props.type === 'items' && props.item.store_ids) {
+            props.item.store_ids.split(",").map((item) => { selectedStores.value.push(Number(item)) });
+        }
+        for (let t_store in t_stores) {
+            formattedStores.push({ label: t_stores[t_store].name, value: t_stores[t_store].store_id });
+        }
+        stores.value = formattedStores;
+    }
+    resetForm();
+});
 </script>
 <style scoped>
 h3 {
     border-bottom: 1px solid darkgray;
 }
-
 .name {
     width: 275px;
 }
-
 .form {
     box-shadow: inset 0px -6px 11px -6px rgba(0, 0, 0, 0.2);
     transition: box-shadow ease 0.4s;

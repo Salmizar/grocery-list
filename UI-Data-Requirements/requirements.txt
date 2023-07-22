@@ -1,0 +1,19 @@
+My grocery list
+
+Must haves
+- Mobile first
+- Multiple grocery lists
+- master list of all items
+- items can be assoicated with 1 category, but this is optional
+- items can be associated with a store, so if you filter on a store, you tecnically have multiple lists (which chantal has), but this is also optional.
+- items can be associated with multiple stores.
+- Item, list, category, store and user management.
+- email invite new users
+- All members can edit items, lists, categories and stores.
+- only admin can edit the users. but general users can view users list
+- the ability to toggle hiding items which are done, in a list.
+
+Nice to have
+- ability to print the lists. chantal like having a piece of paper, so she can forget it at home. lol
+- realtime updates of list editing.
+- 

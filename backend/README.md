@@ -1,14 +1,21 @@
 # backend
 
 
+### DB Setup
+```
+1. run database/initialize.sql
+2. run database/initialData.sql
+3. run database/createUserAccountAndUser-UDF.sql
+```
+
 ### Compiles and hot-reloads for development
 ```
-nodemon api.js
+nodemon app.js
 ```
 
 ### Compiles and minifies for production
 ```
-npm run build
+pkg app.js
 ```
 
 ### Lints and fixes files

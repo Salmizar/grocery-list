@@ -1,17 +1,15 @@
 <template>
-    <footer class="info">
-        <div v-if="!loading && itemsLength === 0">No Items in this list yet.<br /> Click Edit Items to add some.</div>
-        <w-progress v-if="loading" class="ma1" circle></w-progress>
-    </footer>
+  <footer class="info">
+    <div v-if="!props.loading && props.itemsLength === 0">No Items in this list yet.<br /> Click Edit Items to add some.</div>
+    <w-progress v-if="props.loading" class="ma1" circle></w-progress>
+  </footer>
 </template>
-<script>
-export default {
-    props: {
-      loading: Boolean,
-      itemsLength: Number
-    }
-}
-
+<script setup>
+  import { defineProps } from 'vue';
+  const props = defineProps({
+    loading: Boolean,
+    itemsLength: Number
+  });
 </script>
 <style>
 .info {

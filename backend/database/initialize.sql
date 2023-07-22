@@ -2,11 +2,20 @@ DO $do$
 BEGIN
 	/*Revoke public access*/
 	REVOKE ALL ON DATABASE grocerylist FROM public;
-
-	/*Create role and user*/
-	CREATE ROLE grocerylistusers;
+	
+	/*Create role*/
+	CREATE ROLE grocerylistusers WITH NOLOGIN;
+	
+	/*Grant permissions to role*/
 	GRANT CONNECT ON DATABASE grocerylist TO grocerylistusers;
-	CREATE ROLE grocerylistuser LOGIN PASSWORD 'change_me';
+	GRANT USAGE, SELECT , UPDATE ON all sequences IN schema public TO grocerylistusers;
+	GRANT SELECT, UPDATE, DELETE, INSERT, REFERENCES ON ALL TABLES IN SCHEMA public TO grocerylistusers;
+	
+	/*Create user*/
+	CREATE ROLE grocerylistuser LOGIN INHERIT IN ROLE grocerylistusers PASSWORD 'change_me';
+
+	/*pgAdmin bug where valid until is not properly set on password change*/
+	ALTER USER grocerylistuser VALID UNTIL 'infinity';
 
 	/*Create tables and their foreign key references*/
 	CREATE TABLE IF NOT EXISTS users (
@@ -73,9 +82,5 @@ BEGIN
 		FOREIGN KEY (item_id)
 		  REFERENCES items (item_id) ON DELETE CASCADE
 	);
-    
-	/*Grant permissions on all tables to user*/
-	GRANT SELECT, UPDATE, DELETE, INSERT ON ALL TABLES IN SCHEMA public TO grocerylistuser;
-	/*DENY SELECT ON users (auth_id) TO grocerylistuser;*/
 END
 $do$

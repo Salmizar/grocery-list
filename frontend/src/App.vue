@@ -1,10 +1,6 @@
 <template>
   <router-view />
 </template>
-<script>
-export default {
-}
-</script>
 <style>
 @import '@mdi/font/css/materialdesignicons.min.css';
 #app {
@@ -31,7 +27,7 @@ header {
 h2 {
   position: absolute;
   left: 0px;
-  top: 0px;
+  top: 3px;
   width: 100%;
 }
 </style>

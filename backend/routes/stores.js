@@ -3,7 +3,7 @@ const router = express.Router();
 const helpers = require('../utils/helpers');
 
 router.get('/', function (request, response) {
-    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
+    helpers.isAuthorized(request, response).then(([cookies]) => {
         helpers.models.Stores.findAll(
             {
                 where: { account_id: cookies.account_id },
@@ -21,7 +21,7 @@ router.get('/', function (request, response) {
 });
 //update a store
 router.patch('/:store_id', function (request, response) {
-    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
+    helpers.isAuthorized(request, response).then(([cookies]) => {
         if (request.params.store_id) {
             helpers.models.Stores.update(
                 {
@@ -47,7 +47,7 @@ router.patch('/:store_id', function (request, response) {
 });
 //insert a store
 router.post('/', function (request, response) {
-    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
+    helpers.isAuthorized(request, response).then(([cookies]) => {
         if (request.body.name) {
             helpers.models.Stores.create(
                 {
@@ -75,7 +75,7 @@ router.post('/', function (request, response) {
 });
 //delete a store
 router.delete('/:store_id', function (request, response) {
-    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
+    helpers.isAuthorized(request, response).then(([cookies]) => {
         if (request.params.store_id) {
             helpers.models.Stores.destroy(
                 {

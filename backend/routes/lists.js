@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const helpers = require('../utils/helpers')
 router.get('/', function (request, response) {
-    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
+    helpers.isAuthorized(request, response).then(([cookies]) => {
         helpers.models.Lists.findAll(
             {
                 where: { account_id: cookies.account_id },
@@ -20,7 +20,7 @@ router.get('/', function (request, response) {
 });
 //update a list
 router.patch('/:list_id', function (request, response) {
-    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
+    helpers.isAuthorized(request, response).then(([cookies]) => {
         if (request.params.list_id) {
             helpers.models.Lists.update(
                 {
@@ -46,7 +46,7 @@ router.patch('/:list_id', function (request, response) {
 });
 //insert a list
 router.post('/', function (request, response) {
-    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
+    helpers.isAuthorized(request, response).then(([cookies]) => {
         if (request.body.name) {
             helpers.models.Lists.create( 
                 {
@@ -75,7 +75,7 @@ router.post('/', function (request, response) {
 });
 //delete a list
 router.delete('/:list_id', function (request, response) {
-    helpers.isAuthorized(request, response).then(([cookies,isAdmin]) => {
+    helpers.isAuthorized(request, response).then(([cookies]) => {
         if (request.params.list_id) {
             helpers.models.Lists.destroy(
                 {

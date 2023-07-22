@@ -10,11 +10,13 @@
   "dependencies": {
     "@mdi/font": "^7.2.96",
     "@mdi/js": "^7.2.96",
+    "aws-cli": "^0.0.2",
     "axios": "^1.4.0",
     "core-js": "^3.8.3",
     "vue": "^3.2.13",
     "vue-cookies": "^1.8.3",
     "vue-router": "^4.0.3",
+    "vue3-cookies": "^1.0.6",
     "wave-ui": "^3.3.0"
   },
   "devDependencies": {

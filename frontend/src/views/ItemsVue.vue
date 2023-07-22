@@ -20,128 +20,117 @@
     </main>
   </div>
 </template>
-  
-<script>
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useRouter } from "vue-router";
 import axios from "axios";
 import ContextMenu from "@/views/ContextMenu.vue";
 import MiscItem from '@/components/MiscItem.vue';
 import LoadingFooter from "@/components/LoadingFooter.vue";
 import AddEditMisc from '@/views/AddEditMisc.vue';
-export default {
-  components: {
-    MiscItem,
-    ContextMenu,
-    LoadingFooter,
-    AddEditMisc
-
-  },
-  data: () => ({
-    loading: true,
-    addItem: false,
-    items: []
-  }),
-  methods: {
-    toggleAddNewItem() {
-      this.addItem = !this.addItem;
-    },
-    addNewItem(name, item, category, stores) {
-      axios.post(process.env.VUE_APP_API_URL + '/api/items/',
-        { name: name, category_id: category, store_ids: stores.join(",") },
-        { withCredentials: true }
-      )
-        .then((response) => {
-          if (response.status === 200) {
-            this.loading = false;
-            this.addItem = false;
-            this.items.push(response.data);
-            var result = JSON.parse(JSON.stringify(this.items)).sort((a, b) => {
-              const nameA = a.name.toUpperCase();
-              const nameB = b.name.toUpperCase();
-              if (nameA < nameB) { return -1; }
-              if (nameA > nameB) { return 1; }
-              return 0;
-            });
-            this.items = result;
-          }
-        })
-        .catch(error => {
-          if (error.response.status === 401) {
-            this.$router.push({ name: 'Login' });
-          }
+const router = useRouter();
+const loading = ref(true);
+const addItem = ref(false);
+const items = ref([]);
+const toggleAddNewItem = () => {
+  addItem.value = !addItem.value;
+};
+const addNewItem = (name, item, category, stores) => {
+  axios.post(process.env.VUE_APP_API_URL + '/api/items/',
+    { name: name, category_id: category, store_ids: stores.join(",") },
+    { withCredentials: true }
+  )
+    .then((response) => {
+      if (response.status === 200) {
+        loading.value = false;
+        addItem.value = false;
+        items.value.push(response.data);
+        var result = JSON.parse(JSON.stringify(items.value)).sort((a, b) => {
+          const nameA = a.name.toUpperCase();
+          const nameB = b.name.toUpperCase();
+          if (nameA < nameB) { return -1; }
+          if (nameA > nameB) { return 1; }
+          return 0;
         });
-    },
-    updateItem(name, item, category, stores) {
-      axios.patch(process.env.VUE_APP_API_URL + '/api/items/' + item.item_id,
-        { name: name, category_id: category, store_ids: stores.join(",") },
-        { withCredentials: true })
-        .then((response) => {
-          if (response.status === 200) {
-            this.loading = false;
-            for (let itm in this.items) {
-              if (this.items[itm].item_id === response.data[0].item_id) {
-                this.items[itm] = response.data[0];
-              }
-            }
-            item = response.data[0];
+        items.value = result;
+      }
+    })
+    .catch(error => {
+      if (error.response.status === 401) {
+        router.push({ name: 'Login' });
+      }
+    });
+};
+const updateItem = (name, item, category, stores) => {
+  axios.patch(process.env.VUE_APP_API_URL + '/api/items/' + item.item_id,
+    { name: name, category_id: category, store_ids: stores.join(",") },
+    { withCredentials: true })
+    .then((response) => {
+      if (response.status === 200) {
+        loading.value = false;
+        for (let itm in items.value) {
+          if (items.value[itm].item_id === response.data[0].item_id) {
+            items.value[itm] = response.data[0];
           }
-        })
-        .catch(error => {
-          if (error.response.status === 401) {
-            this.$router.push({ name: 'Login' });
-          }
-        });
-    },
-    cancelItem() {
-      this.addItem = false;
-    },
-    deleteItem(item) {
-      axios.delete(process.env.VUE_APP_API_URL + '/api/items/' + item.item_id, { withCredentials: true })
-        .then((response) => {
-          if (response.status === 200) {
-            this.loading = false;
-            this.items = this.items.filter((itemtoCheck) => itemtoCheck.item_id != item.item_id);
-          }
-        })
-        .catch(error => {
-          if (error.response.status === 401) {
-            this.$router.push({ name: 'Login' });
-          }
-        });
-    },
-    getItems() {
-      axios.get(process.env.VUE_APP_API_URL + '/api/items/', { withCredentials: true })
-        .then((response) => {
-          if (response.status === 200) {
-            this.loading = false;
-            this.items = response.data;
-          }
-        })
-        .catch(error => {
-          if (error.response.status === 401) {
-            this.$router.push({ name: 'Login' });
-          }
-        });
-    },
-    getCategories() {
-      this.loading = true;
-      axios.get(process.env.VUE_APP_API_URL + '/api/categories/', { withCredentials: true })
-        .then((response) => {
-          if (response.status === 200) {
-            window.localStorage.setItem("mygrocerylist-categories", JSON.stringify(response.data));
-            this.getItems();
-          }
-        })
-        .catch(error => {
-          if (error.response.status === 401) {
-            this.$router.push({ name: 'Login' });
-          }
-        });
-    }
-  },
-  mounted() {
-    this.getCategories();
-  }
-}
+        }
+        item = response.data[0];
+      }
+    })
+    .catch(error => {
+      if (error.response.status === 401) {
+        router.push({ name: 'Login' });
+      }
+    });
+};
+const cancelItem = () => {
+  addItem.value = false;
+};
+const deleteItem = (item) => {
+  axios.delete(process.env.VUE_APP_API_URL + '/api/items/' + item.item_id, { withCredentials: true })
+    .then((response) => {
+      if (response.status === 200) {
+        loading.value = false;
+        items.value = items.value.filter((itemtoCheck) => itemtoCheck.item_id != item.item_id);
+      }
+    })
+    .catch(error => {
+      if (error.response.status === 401) {
+        router.push({ name: 'Login' });
+      }
+    });
+};
+const getItems = () => {
+  axios.get(process.env.VUE_APP_API_URL + '/api/items/', { withCredentials: true })
+    .then((response) => {
+      if (response.status === 200) {
+        loading.value = false;
+        items.value = response.data;
+      }
+    })
+    .catch(error => {
+      if (error.response.status === 401) {
+        router.push({ name: 'Login' });
+      }
+    });
+};
+const getCategories = () => {
+  loading.value = true;
+  axios.get(process.env.VUE_APP_API_URL + '/api/categories/', { withCredentials: true })
+    .then((response) => {
+      if (response.status === 200) {
+        window.localStorage.setItem("mygrocerylist-categories", JSON.stringify(response.data));
+        getItems();
+      }
+    })
+    .catch(error => {
+      if (error.response.status === 401) {
+        router.push({ name: 'Login' });
+      }
+    });
+};
+onMounted(() => {
+  getCategories();
+});
 </script>
 <style scoped>
 /* header/h2 tags in app.vue*/

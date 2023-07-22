@@ -21,115 +21,104 @@
     </main>
   </div>
 </template>
-
-<script>
+<script setup>
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import axios from "axios";
 import ContextMenu from "@/views/ContextMenu.vue";
 import MiscItem from '@/components/MiscItem.vue';
 import LoadingFooter from "@/components/LoadingFooter.vue";
 import AddEditMisc from '@/views/AddEditMisc.vue';
-export default {
-  components: {
-    MiscItem,
-    ContextMenu,
-    LoadingFooter,
-    AddEditMisc
-
-  },
-  data: () => ({
-    loading: true,
-    addItem: false,
-    items: []
-  }),
-  methods: {
-    toggleAddNewItem() {
-      this.addItem = !this.addItem;
-    },
-    addNewItem(name) {
-      axios.post(process.env.VUE_APP_API_URL + '/api/stores/',
-        { name: name },
-        { withCredentials: true }
-      )
-        .then((response) => {
-          if (response.status === 200) {
-            this.addItem = false;
-            this.items.push(response.data);
-            var result = JSON.parse(JSON.stringify(this.items)).sort((a, b) => {
-              const nameA = a.name.toUpperCase();
-              const nameB = b.name.toUpperCase();
-              if (nameA < nameB) { return -1; }
-              if (nameA > nameB) { return 1; }
-              return 0;
-            });
-            this.items = result;
-            this.updateStorage();
-          }
-        })
-        .catch(error => {
-          if (error.response.status === 401) {
-            this.$router.push({ name: 'Login' });
-          }
+const router = useRouter();
+const loading = ref(true);
+const addItem = ref(false);
+const items = ref([]);
+const toggleAddNewItem = () => {
+  addItem.value = !addItem.value;
+};
+const addNewItem = (name) => {
+  axios.post(process.env.VUE_APP_API_URL + '/api/stores/',
+    { name: name },
+    { withCredentials: true }
+  )
+    .then((response) => {
+      if (response.status === 200) {
+        addItem.value = false;
+        items.value.push(response.data);
+        var result = JSON.parse(JSON.stringify(items.value)).sort((a, b) => {
+          const nameA = a.name.toUpperCase();
+          const nameB = b.name.toUpperCase();
+          if (nameA < nameB) { return -1; }
+          if (nameA > nameB) { return 1; }
+          return 0;
         });
-    },
-    updateStorage() {
-      this.loading = false;
-      window.localStorage.setItem("mygrocerylist-stores", JSON.stringify(this.items));
-    },
-    updateItem(name, item) {
-      axios.patch(process.env.VUE_APP_API_URL + '/api/stores/' + item.store_id, { name: name }, { withCredentials: true })
-        .then((response) => {
-          if (response.status === 200) {
-            item.name = name;
-            this.updateStorage();
-          }
-        })
-        .catch(error => {
-          if (error.response.status === 401) {
-            this.$router.push({ name: 'Login' });
-          }
-        });
-    },
-    cancelItem() {
-      this.addItem = false;
-    },
-    deleteItem(item) {
-      axios.delete(process.env.VUE_APP_API_URL + '/api/stores/' + item.store_id, { withCredentials: true })
-        .then((response) => {
-          if (response.status === 200) {
-            this.items = this.items.filter((itemtoCheck) => itemtoCheck.store_id != item.store_id);
-            this.updateStorage();
-          }
-        })
-        .catch(error => {
-          if (error.response.status === 401) {
-            this.$router.push({ name: 'Login' });
-          }
-        });
-    },
-    getItems() {
-      this.loading = true;
-      axios.get(process.env.VUE_APP_API_URL + '/api/stores/', { withCredentials: true })
-        .then((response) => {
-          if (response.status === 200) {
-            this.loading = false;
-            this.items = response.data;
-          }
-        })
-        .catch(error => {
-          if (error.response.status === 401) {
-            this.$router.push({ name: 'Login' });
-          }
-        });
-    }
-  },
-  mounted() {
-    this.getItems();
-  }
-}
+        items.value = result;
+        updateStorage();
+      }
+    })
+    .catch(error => {
+      if (error.response.status === 401) {
+        router.push({ name: 'Login' });
+      }
+    });
+};
+const updateStorage = () => {
+  loading.value = false;
+  window.localStorage.setItem("mygrocerylist-stores", JSON.stringify(items.value));
+};
+const updateItem = (name, item) => {
+  axios.patch(process.env.VUE_APP_API_URL + '/api/stores/' + item.store_id, { name: name }, { withCredentials: true })
+    .then((response) => {
+      if (response.status === 200) {
+        item.name = name;
+        updateStorage();
+      }
+    })
+    .catch(error => {
+      if (error.response.status === 401) {
+        router.push({ name: 'Login' });
+      }
+    });
+};
+const cancelItem = () => {
+  addItem.value = false;
+};
+const deleteItem = (item) => {
+  axios.delete(process.env.VUE_APP_API_URL + '/api/stores/' + item.store_id, { withCredentials: true })
+    .then((response) => {
+      if (response.status === 200) {
+        items.value = items.value.filter((itemtoCheck) => itemtoCheck.store_id != item.store_id);
+        updateStorage();
+      }
+    })
+    .catch(error => {
+      if (error.response.status === 401) {
+        router.push({ name: 'Login' });
+      }
+    });
+};
+const getItems = () => {
+  loading.value = true;
+  axios.get(process.env.VUE_APP_API_URL + '/api/stores/', { withCredentials: true })
+    .then((response) => {
+      if (response.status === 200) {
+        loading.value = false;
+        items.value = response.data;
+      }
+    })
+    .catch(error => {
+      if (error.response.status === 401) {
+        router.push({ name: 'Login' });
+      }
+    });
+};
+onMounted(() => {
+  getItems();
+});
 </script>
 <style scoped>
 /* header/h2 tags in app.vue*/
 .add-item {
   border-bottom: 1px solid darkgray;
-
-}</style>
+}
+</style>
