@@ -76,12 +76,24 @@ router.patch('/login/:email', function (request, response) {
                                     response.status(401).send();
                                     break;
                                 case 1:
-                                    cookies.push(helpers.cookie.serialize('isAdmin', String(userAdminResult[0].account_users.length > 0), helpers.cookieParams));
+                                    let isAdmin = userAdminResult[0].account_users.length > 0;
+                                    cookies.push(helpers.cookie.serialize('isAdmin', String(isAdmin), helpers.cookieParams));
+                                    dataCopy.isAdmin = isAdmin;
                                     response.setHeader('Set-Cookie', [...cookies, helpers.cookie.serialize('account_id', String(userAccounts[0].account_users[0].account_id), helpers.cookieParams)])
                                         .json(dataCopy);
                                     break;
                                 default:
-                                    dataCopy.account_users = userAccounts[0].account_users;
+                                    //More thank one account for this user. If they specified an account_id this time, it means log them into that account
+                                    if (request.body.account_id) {
+                                        let accountInfo = userAdminResult[0].account_users.filter(account => Number(account.account_id) === Number(request.body.account_id));
+                                        let isAdmin = Boolean(accountInfo[0]!=undefined);
+                                        cookies.push(helpers.cookie.serialize('isAdmin', String(isAdmin), helpers.cookieParams));
+                                        dataCopy.isAdmin = isAdmin;
+                                        response.setHeader('Set-Cookie', [...cookies, helpers.cookie.serialize('account_id', String(request.body.account_id), helpers.cookieParams)])
+                                            .json(dataCopy);
+                                    } else {
+                                        dataCopy.account_users = userAccounts[0].account_users;
+                                    }
                                     response.setHeader('Set-Cookie', cookies)
                                         .json(dataCopy);
                             }
@@ -154,14 +166,14 @@ function createAccountUser(cookies, response, inviteUserData) {
                 }
             });
             let registerURL = process.env.ORIGIN_URL;
-            let msg = 'Hello!<br><br>You have been invited to join a My Grocery List account.<br>Open this link in your browser to login<br><br><a href="' + registerURL + '">' + registerURL;
+            let msg = '<p>Hello!</p><p>You have been invited to join a My Grocery List account.</p><p>Open this link in your browser to login</p><a href="' + registerURL + '">' + registerURL;
 
             if (inviteUserData.password === 'newUser') {
                 registerURL += process.env.ORIGIN_URL + '/reset/' + inviteUserData.user_id +
                     '?new=true&email=' + inviteUserData.email +
                     '&auth_id=' + inviteUserData.auth_id +
                     '&account_id=' + cookies.account_id;
-                msg = 'Hello!<br><br>You have been invited to join a My Grocery List account.<br>Open this link in your browser to set your password and login!<br><br><a href="' + registerURL + '">' + registerURL;
+                msg = '<p>Hello!</p><p>You have been invited to join a My Grocery List account.</p><p>Open this link in your browser to set your password and login!</p><a href="' + registerURL + '">' + registerURL;
             }
             var mailOptions = {
                 from: process.env.EMAIL_USERNAME,
@@ -242,7 +254,7 @@ router.patch('/:user_id', function (request, response) {
                                 }
                             });
                             let registerURL = process.env.ORIGIN_URL;
-                            let msg = 'Hello!<br><br>The Admin updated your account details on their My Grocery List account.<br>Open this link in your browser to login<br><br><a href="' + registerURL + '">' + registerURL;
+                            let msg = '<p>Hello!</p><p>The Admin updated your account details on their My Grocery List account.</p><p>Open this link in your browser to login</p><a href="' + registerURL + '">' + registerURL;
                             var mailOptions = {
                                 from: process.env.EMAIL_USERNAME,
                                 to: request.body.email,

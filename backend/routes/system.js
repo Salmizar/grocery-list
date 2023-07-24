@@ -3,7 +3,6 @@ const router = express.Router();
 const helpers = require('../utils/helpers');
 
 router.get('/database/', function (request, response) {
-
     helpers.models.Users.findAll(
         {
             attributes: ['user_id'],
@@ -19,7 +18,8 @@ router.get('/database/', function (request, response) {
 });
 
 router.get('/', function (request, response) {
-    response.status(200).send();
+
+    response.json({'API': 'online'});
 });
 
 module.exports = router;

@@ -20,14 +20,14 @@
           v-on:click="submitLogin()">Login</w-button>
       </w-form>
       <nav>
-        <router-link :to="{ name: 'Reset' }">Forgot Password</router-link><br>
+        <p><router-link :to="{ name: 'Reset' }">Forgot Password</router-link></p>
         Dont have an account? <router-link :to="{ name: 'Register' }">Register</router-link> now.
       </nav>
     </div>
   </div>
 </template>
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useCookies } from "vue3-cookies";
 import axios from "axios";
@@ -49,10 +49,24 @@ const redirectToAccount = () => {
   router.push({ name: "Lists" });
 };
 const selectAccount = () => {
-  submitloading.value = true;
-  cookies.set("account_id", accountSelection.value.account.account_id);
-  cookies.set("isAdmin", (accountSelection.value.account.user_id === Number(cookies.get('user_id'))));
-  redirectToAccount();
+  if (valid.value) {
+    submitloading.value = true;
+    isInvalidResult.value = false;
+    axios.patch(process.env.VUE_APP_API_URL + "/api/users/login/" + userEmail.value, { password: userPassword.value, account_id: accountSelection.value.account.account_id}, { withCredentials: true })
+      .then((response) => {
+        submitloading.value = false;
+        if (response.status === 200) {
+          cookies.set("isAdmin", response.data.isAdmin, '7d');
+            redirectToAccount();
+        }
+      })
+      .catch(error => {
+        submitloading.value = false;
+        if (error.response.status === 401) {
+          isInvalidResult.value = true;
+        }
+      });
+  }
 };
 const resetForm = () => {
   accountSelection.value = 0;
@@ -61,12 +75,14 @@ const resetForm = () => {
 };
 const submitLogin = () => {
   if (valid.value) {
+    items.value = new Array();
     submitloading.value = true;
     isInvalidResult.value = false;
     axios.patch(process.env.VUE_APP_API_URL + "/api/users/login/" + userEmail.value, { password: userPassword.value }, { withCredentials: true })
       .then((response) => {
         submitloading.value = false;
         if (response.status === 200) {
+          cookies.set("isAdmin", response.data.isAdmin, '7d');
           if (response.data.account_users && response.data.account_users.length > 1) {
             for (var item in response.data.account_users) {
               items.value.push({ label: response.data.account_users[item].account.name, value: response.data.account_users[item] });
@@ -85,6 +101,9 @@ const submitLogin = () => {
       });
   }
 };
+onMounted(() => {
+  cookies.remove("isAdmin");
+});
 </script>
 <style scoped>
 .login-container {

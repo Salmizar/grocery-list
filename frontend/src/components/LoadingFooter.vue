@@ -1,6 +1,6 @@
 <template>
   <footer class="info">
-    <div v-if="!props.loading && props.itemsLength === 0">No Items in this list yet.<br /> Click Edit Items to add some.</div>
+    <div v-if="!props.loading && props.itemsLength === 0"><p>No Items in this list yet.</p> Click Edit Items to add some.</div>
     <w-progress v-if="props.loading" class="ma1" circle></w-progress>
   </footer>
 </template>

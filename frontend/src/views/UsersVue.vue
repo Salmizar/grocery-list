@@ -25,10 +25,12 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
+import { useCookies } from "vue3-cookies";
 import ContextMenu from "@/views/ContextMenu.vue";
 import MiscItem from '@/components/MiscItem.vue';
 import AddEditUser from '@/views/AddEditUser.vue';
 import LoadingFooter from "@/components/LoadingFooter.vue";
+const { cookies } = useCookies();
 const router = useRouter();
 const loading = ref(true);
 const addItem = ref(false);
@@ -122,7 +124,7 @@ const getItems = () => {
     });
 }
 onMounted(() => {
-  isAdmin.value = Boolean(window.$cookies.get('isAdmin') === 'true');
+  isAdmin.value = Boolean(cookies.get('isAdmin') === 'true');
   getItems();
 });
 </script>

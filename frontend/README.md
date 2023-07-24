@@ -4,6 +4,7 @@
 ```
 aws s3 sync ./dist s3://aws-my-grocery-list
 ```
+http://aws-my-grocery-list.s3-website.us-east-2.amazonaws.com
 
 ### Compiles and hot-reloads for development
 ```

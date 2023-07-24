@@ -9,7 +9,8 @@ exports.crypto = require('crypto');
 exports.cookieParams = {
     path: '/',
     //secure: true, sameSite: 'none" //In order to set cross domain cookies
-    sameSite: 'strict',
+    sameSite: 'none',
+    secure: true,
     maxAge: 60 * 60 * 24 * 7 // 1 week
 };
 exports.isAuthorized = (request, response) => {

@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { useCookies } from "vue3-cookies";
+const { cookies } = useCookies();
 const isAuthenticated = () => {
-  return !!window.$cookies.isKey('user_id') || !!window.$cookies.isKey('account_id') || !!window.$cookies.isKey('auth_id') || '/';
+  return cookies.isKey('isAdmin') || '/';
 }
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),

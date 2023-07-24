@@ -33,9 +33,9 @@ router.get('/:email', function (request, response) {
                     from: process.env.EMAIL_USERNAME,
                     to: data[0].email,
                     subject: 'My Grocery List Update Password Request',
-                    html: 'Open this link in your browser to reset your password for My Grocery list!<br><br><a href="' + resetURL + '">' +
+                    html: '<p>Open this link in your browser to reset your password for My Grocery list!</p><p><a href="' + resetURL + '">' +
                         resetURL +
-                        '</a><br><br>If this wasn\'t you, you can disregard.'
+                        '</a></p>If this wasn\'t you, you can disregard.'
                 };
                 transporter.sendMail(mailOptions, function (error, info) {
                     if (error) {
