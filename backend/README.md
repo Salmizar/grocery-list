@@ -18,6 +18,23 @@ nodemon app.js
 pkg app.js
 ```
 
+### Re-deploy TLS Instructions
+```
+[Let's Encrypt Manual Update](https://eff-certbot.readthedocs.io/en/latest/using.html#manual)
+
+PowerShell CMD
+
+> certbot certonly --manual --preferred-challenges dns
+
+To renew this certificate, repeat this same certbot command before the certificate's expiry date.
+
+fullChain.pem = server.crt
+privkey.pem = server.key
+
+Zip up Contents of Backend folder minus; readme.md, database folder, node_modules folders.
+Upload to AWS->EB->Environments->My-grocery-list-env
+```
+
 ### Lints and fixes files
 ```
 npx eslint .
