@@ -17,7 +17,8 @@
     "vue-cookies": "^1.8.3",
     "vue-router": "^4.0.3",
     "vue3-cookies": "^1.0.6",
-    "wave-ui": "^3.3.0"
+    "wave-ui": "^3.3.0",
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "@babel/core": "^7.23.2",
